@@ -3,7 +3,7 @@ import pandas as pd
 import datetime
 
 # --- 1. 參數與自定義區 ---
-SEARCH_RANGE = 0.01  
+SEARCH_RANGE = 0.01  # 離均線 1% 以內
 DEFAULT_MA = 20
 
 # 格式: "代號": (MA天數, 專屬搜尋範圍)
@@ -47,9 +47,11 @@ def get_clean_name(ticker_obj, symbol):
         return symbol
 
 def main():
+    # 抓取股價數據
     data = yf.download(TICKERS, period="100d", interval="1d", progress=False)['Close']
     passed = []
     today = datetime.datetime.now()
+    today_date = today.date() # 取得今天純日期
     
     for ticker in TICKERS:
         try:
@@ -63,17 +65,23 @@ def main():
             price = col.iloc[-1]
             diff_ratio = (price / ma_val) - 1
             
+            # 判斷是否在搜尋範圍內
             if abs(diff_ratio) <= specific_range:
                 t_obj = yf.Ticker(ticker)
                 
+                # --- 財報預警修正區 ---
                 earnings_date = "N/A"
                 is_near_earnings = False
                 try:
                     cal = t_obj.calendar
                     if 'Earnings Date' in cal and cal['Earnings Date']:
-                        e_date = cal['Earnings Date'][0]
+                        e_dt = cal['Earnings Date'][0].replace(tzinfo=None)
+                        e_date = e_dt.date() # 轉為純日期比較
                         earnings_date = e_date.strftime('%Y-%m-%d')
-                        if 0 <= (e_date.replace(tzinfo=None) - today).days <= 7:
+                        
+                        # 計算天數差 (0-7 天內預警)
+                        delta = (e_date - today_date).days
+                        if 0 <= delta <= 7:
                             is_near_earnings = True
                 except: pass
 
@@ -82,28 +90,29 @@ def main():
                     "Name": get_clean_name(t_obj, ticker),
                     "Price": round(float(price), 2),
                     "MA_Days": ma_days,
-                    "Diff_Val": float(diff_ratio), # 核心排序數值
+                    "Diff_Val": float(diff_ratio), 
                     "Diff_Str": f"{diff_ratio*100:+.2f}%",
                     "Earnings": earnings_date,
                     "Warning": is_near_earnings
                 })
         except: continue
 
-    # --- 關鍵修正：確保排序針對數值進行降冪排列 ---
-    # reverse=True 代表從大到小 (從 +0.99 排到 -0.99)
+    # --- 排序：從最高正偏離排到最低負偏離 (+0.99% -> -0.99%) ---
     passed.sort(key=lambda x: x['Diff_Val'], reverse=True)
     
     now = today.strftime("%Y-%m-%d %H:%M:%S")
     rows = ""
     for x in passed:
+        # 視覺樣式邏輯
         badge_color = "bg-success" if x['Diff_Val'] >= 0 else "bg-danger"
         bg_style = "background-color: #fff5f5;" if x['Warning'] else ""
         header_color = "bg-danger" if x['Warning'] else "bg-primary"
+        warning_tag = '<span class="badge bg-warning text-dark ms-2">⚠️ 近期財報</span>' if x['Warning'] else ""
         
         rows += f"""
         <div class="card mb-4 shadow border-0" style="{bg_style}">
             <div class="card-header d-flex justify-content-between align-items-center {header_color} text-white">
-                <h5 class="mb-0">{x['Name']} ({x['Symbol']})</h5>
+                <h5 class="mb-0">{x['Name']} ({x['Symbol']}){warning_tag}</h5>
                 <span class="badge bg-light text-dark">下次財報: {x['Earnings']}</span>
             </div>
             <div class="card-body p-3">
@@ -117,7 +126,7 @@ def main():
                 new TradingView.widget({{
                   "autosize": true, "symbol": "{x['Symbol']}", "interval": "D", "timezone": "Etc/UTC",
                   "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_{x['Symbol']}", "hide_top_toolbar": true,
+                  "container_id": "tv_{x['Symbol']}", "hide_top_toolbar": true, "save_image": false,
                   "studies": [ {{ "id": "MASimple@tv-basicstudies", "inputs": {{ "length": {x['MA_Days']} }} }} ]
                 }});
                 </script>
@@ -135,6 +144,8 @@ def main():
         <style>
             body {{ background-color: #f4f7f6; }}
             .container {{ max-width: 850px; }}
+            .card {{ transition: transform 0.2s; }}
+            .card:hover {{ transform: scale(1.005); }}
         </style>
     </head>
     <body class="py-5">
