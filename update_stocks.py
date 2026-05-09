@@ -3,18 +3,17 @@ import pandas as pd
 import datetime
 
 # --- 1. 參數與自定義區 ---
-SEARCH_RANGE = 0.01  # 離均線 1% 以內
+SEARCH_RANGE = 0.01  
 DEFAULT_MA = 20
 
 # 格式: "代號": (MA天數, 專屬搜尋範圍)
 CUSTOM_CONFIG = {
-    "V": (19, 0.01),      # Visa: 19MA
+    "V": (19, 0.01),      
     "AAPL": (20, 0.01),   
     "NVDA": (10, 0.015),  
     "LULU": (60, 0.01),
 }
 
-# 190 檔完整名單
 TICKERS = [
     "INTU", "GOOGL", "PLUS", "AXP", "AIT", "NVO", "ACN", "AGM", "BKNG", "GAJG", 
     "ASML", "AME", "AAPL", "IBP", "PAYC", "URI", "GIB", "AEE", "XEL", "WEC", 
@@ -48,7 +47,6 @@ def get_clean_name(ticker_obj, symbol):
         return symbol
 
 def main():
-    # 抓取股價數據
     data = yf.download(TICKERS, period="100d", interval="1d", progress=False)['Close']
     passed = []
     today = datetime.datetime.now()
@@ -67,9 +65,7 @@ def main():
             
             if abs(diff_ratio) <= specific_range:
                 t_obj = yf.Ticker(ticker)
-                display_name = get_clean_name(t_obj, ticker)
                 
-                # 財報日期抓取與預警
                 earnings_date = "N/A"
                 is_near_earnings = False
                 try:
@@ -83,32 +79,31 @@ def main():
 
                 passed.append({
                     "Symbol": ticker,
-                    "Name": display_name,
+                    "Name": get_clean_name(t_obj, ticker),
                     "Price": round(float(price), 2),
                     "MA_Days": ma_days,
-                    "Diff_Val": diff_ratio,  # 用於實際數值排序
+                    "Diff_Val": float(diff_ratio), # 核心排序數值
                     "Diff_Str": f"{diff_ratio*100:+.2f}%",
                     "Earnings": earnings_date,
                     "Warning": is_near_earnings
                 })
         except: continue
 
-    # --- 核心排序：從正到負 (+0.99% -> -0.99%) ---
-    passed = sorted(passed, key=lambda x: x['Diff_Val'], reverse=True)
+    # --- 關鍵修正：確保排序針對數值進行降冪排列 ---
+    # reverse=True 代表從大到小 (從 +0.99 排到 -0.99)
+    passed.sort(key=lambda x: x['Diff_Val'], reverse=True)
     
     now = today.strftime("%Y-%m-%d %H:%M:%S")
     rows = ""
     for x in passed:
-        # 視覺樣式設定
         badge_color = "bg-success" if x['Diff_Val'] >= 0 else "bg-danger"
         bg_style = "background-color: #fff5f5;" if x['Warning'] else ""
-        warning_tag = '<span class="badge bg-warning text-dark ms-2">⚠️ 財報預警</span>' if x['Warning'] else ""
         header_color = "bg-danger" if x['Warning'] else "bg-primary"
         
         rows += f"""
         <div class="card mb-4 shadow border-0" style="{bg_style}">
             <div class="card-header d-flex justify-content-between align-items-center {header_color} text-white">
-                <h5 class="mb-0">{x['Name']} ({x['Symbol']}) {warning_tag}</h5>
+                <h5 class="mb-0">{x['Name']} ({x['Symbol']})</h5>
                 <span class="badge bg-light text-dark">下次財報: {x['Earnings']}</span>
             </div>
             <div class="card-body p-3">
@@ -116,14 +111,13 @@ def main():
                     <span><b>{x['MA_Days']}MA 偏離距離:</b> <span class="badge {badge_color}">{x['Diff_Str']}</span></span>
                     <span><b>目前股價:</b> ${x['Price']}</span>
                 </div>
-                <!-- TradingView 互動圖表 -->
                 <div id="tv_{x['Symbol']}" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
                 new TradingView.widget({{
                   "autosize": true, "symbol": "{x['Symbol']}", "interval": "D", "timezone": "Etc/UTC",
                   "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_{x['Symbol']}", "hide_top_toolbar": true, "save_image": false,
+                  "container_id": "tv_{x['Symbol']}", "hide_top_toolbar": true,
                   "studies": [ {{ "id": "MASimple@tv-basicstudies", "inputs": {{ "length": {x['MA_Days']} }} }} ]
                 }});
                 </script>
@@ -139,21 +133,14 @@ def main():
         <title>均線回測報告</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <style>
-            body {{ background-color: #f4f7f6; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }}
+            body {{ background-color: #f4f7f6; }}
             .container {{ max-width: 850px; }}
-            .card {{ transition: transform 0.2s; }}
-            .card:hover {{ transform: scale(1.01); }}
         </style>
     </head>
     <body class="py-5">
         <div class="container">
             <h2 class="text-center mb-2">🎯 精選均線回測標的</h2>
             <p class="text-center text-muted small">依偏離度排序 (+0.99% → -0.99%)<br>更新時間: {now} (UTC)</p>
-            <div class="d-flex justify-content-center mb-4 gap-2">
-                <span class="badge bg-success">均線上</span>
-                <span class="badge bg-danger">均線下</span>
-                <span class="badge bg-warning text-dark">⚠️ 近期財報</span>
-            </div>
             <hr>
             {rows if passed else '<div class="alert alert-info text-center">目前無標的在均線 1% 範圍內</div>'}
         </div>
