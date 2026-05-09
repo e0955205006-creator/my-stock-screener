@@ -1,48 +1,25 @@
 import yfinance as yf
 import pandas as pd
 import datetime
+import os
 
-# --- 1. 參數自定義區 ---
-# 預設：搜尋離 MA 只有 1% 距離的公司
+# --- 1. 參數設定 ---
 SEARCH_RANGE = 0.01  
-
-# 格式: "代號": (MA天數, 專屬搜尋範圍)
 CUSTOM_CONFIG = {
+    "V": (19, 0.01),      
     "AAPL": (20, 0.01),   
-    "NVDA": (10, 0.015), 
+    "NVDA": (10, 0.015),  
     "LULU": (60, 0.01),
 }
-
 DEFAULT_MA = 20
 
-# --- 2. 完整公司名單 (190+ 檔) ---
-TICKERS = [
-    "INTU", "GOOGL", "PLUS", "AXP", "AIT", "NVO", "ACN", "AGM", "BKNG", "GAJG", 
-    "ASML", "AME", "AAPL", "IBP", "PAYC", "URI", "GIB", "AEE", "XEL", "WEC", 
-    "LNT", "CTAS", "CPK", "CHE", "HD", "UNH", "ADP", "APD", "ATO", "COST", 
-    "MA", "V", "CW", "GD", "DPZ", "DRI", "ECL", "EME", "FIX", "GRMN", 
-    "HEI", "ICFI", "IDA", "IEX", "ITW", "JKHY", "MZTI", "II", "LOW", "MCD", 
-    "MCO", "MLM", "MSS", "MSCI", "HCA", "DKS", "ODFL", "OMC", "PKG", "RACE", 
-    "RMD", "ROP", "ROST", "RSG", "SHW", "SNA", "SNX", "SSD", "TMQ", "TSCO", 
-    "TTC", "TXRH", "WDFC", "WSO", "ZTS", "UNP", "MLR", "A_SN", "AYI", "SAIC", 
-    "TJX", "MSFT", "ETN", "CMG", "FTNT", "TYL", "CPAY", "ASR", "ANET", "MIDD", 
-    "LOPE", "ADUS", "CRL", "NFLX", "SAIA", "MEDP", "RBC", "MTD", "FFIV", "FIVE", 
-    "EW", "BURL", "ULTA", "SAM", "ISRG", "COO", "AZO", "BJ", "VEEV", "ICLR", 
-    "ADBE", "FICO", "IDXX", "QLYS", "EEFT", "TREX", "SNPS", "TTD", "CPRT", "DECK",
-    "JNJ", "UNF", "AN", "ALGN", "HON", "LULU", "PH", "PWR", "CSL", "EVRG", 
-    "CP", "CHD", "FBIN", "AAP", "CSGS", "ED", "DTE", "CMS", "CHKP", "CAJPY", 
-    "AWK", "AWR", "ARTNA", "AGCO", "AEP", "ADM", "ADI", "ACNB", "AAON", "VZ", 
-    "MDT", "GIII", "EHC", "DOV", "MMM", "CNI", "APH", "AOS", "AMCX", "ALLE", 
-    "ALG", "AKAM", "AEQ", "BR", "CASY", "ARMK", "CSCO", "CL", "COLM", "BFAM", 
-    "BDL", "APTV", "AMAT", "CNXN", "CMI", "CMCSA", "CLX", "CHH", "CGNX", "CDW", 
-    "CDNS", "CCI", "CAKE", "CAE", "CACI", "BWA", "BOOT", "BDX", "BCPC", "BCE", 
-    "BBSI", "BAH", "AVY", "AWI", "INTC", "ATR"
-]
+# 190 檔名單 (已縮減，請確認你的 TICKERS 列表完整)
+TICKERS = ["INTU", "GOOGL", "PLUS", "AXP", "AIT", "NVO", "ACN", "AGM", "BKNG", "GAJG", "ASML", "AME", "AAPL", "IBP", "PAYC", "URI", "GIB", "AEE", "XEL", "WEC", "LNT", "CTAS", "CPK", "CHE", "HD", "UNH", "ADP", "APD", "ATO", "COST", "MA", "V", "CW", "GD", "DPZ", "DRI", "ECL", "EME", "FIX", "GRMN", "HEI", "ICFI", "IDA", "IEX", "ITW", "JKHY", "MZTI", "II", "LOW", "MCD", "MCO", "MLM", "MSS", "MSCI", "HCA", "DKS", "ODFL", "OMC", "PKG", "RACE", "RMD", "ROP", "ROST", "RSG", "SHW", "SNA", "SNX", "SSD", "TMQ", "TSCO", "TTC", "TXRH", "WDFC", "WSO", "ZTS", "UNP", "MLR", "A_SN", "AYI", "SAIC", "TJX", "MSFT", "ETN", "CMG", "FTNT", "TYL", "CPAY", "ASR", "ANET", "MIDD", "LOPE", "ADUS", "CRL", "NFLX", "SAIA", "MEDP", "RBC", "MTD", "FFIV", "FIVE", "EW", "BURL", "ULTA", "SAM", "ISRG", "COO", "AZO", "BJ", "VEEV", "ICLR", "ADBE", "FICO", "IDXX", "QLYS", "EEFT", "TREX", "SNPS", "TTD", "CPRT", "DECK", "JNJ", "UNF", "AN", "ALGN", "HON", "LULU", "PH", "PWR", "CSL", "EVRG", "CP", "CHD", "FBIN", "AAP", "CSGS", "ED", "DTE", "CMS", "CHKP", "CAJPY", "AWK", "AWR", "ARTNA", "AGCO", "AEP", "ADM", "ADI", "ACNB", "AAON", "VZ", "MDT", "GIII", "EHC", "DOV", "MMM", "CNI", "APH", "AOS", "AMCX", "ALLE", "ALG", "AKAM", "AEQ", "BR", "CASY", "ARMK", "CSCO", "CL", "COLM", "BFAM", "BDL", "APTV", "AMAT", "CNXN", "CMI", "CMCSA", "CLX", "CHH", "CGNX", "CDW", "CDNS", "CCI", "CAKE", "CAE", "CACI", "BWA", "BOOT", "BDX", "BCPC", "BCE", "BBSI", "BAH", "AVY", "AWI", "INTC", "ATR"]
 
 def main():
-    # 抓取數據
     data = yf.download(TICKERS, period="100d", interval="1d", progress=False)['Close']
     passed = []
+    today = datetime.datetime.now()
     
     for ticker in TICKERS:
         try:
@@ -54,72 +31,87 @@ def main():
             
             ma_val = col.rolling(ma_days).mean().iloc[-1]
             price = col.iloc[-1]
-            
             diff_ratio = (price / ma_val) - 1
             
-            # 篩選條件：股價於均線 ±1% 範圍內
             if abs(diff_ratio) <= specific_range:
-                diff_pct = diff_ratio * 100
+                t_obj = yf.Ticker(ticker)
+                
+                # 獲取財報日期
+                earnings_date = "N/A"
+                is_near_earnings = False
+                try:
+                    cal = t_obj.calendar
+                    if 'Earnings Date' in cal and cal['Earnings Date']:
+                        e_date = cal['Earnings Date'][0] # 取得第一個預估日
+                        earnings_date = e_date.strftime('%Y-%m-%d')
+                        # 檢查是否在未來 7 天內
+                        if 0 <= (e_date.replace(tzinfo=None) - today).days <= 7:
+                            is_near_earnings = True
+                except: pass
+
                 passed.append({
                     "Symbol": ticker,
+                    "Name": t_obj.info.get('shortName', ticker),
                     "Price": round(float(price), 2),
-                    "MA_Type": f"{ma_days}MA",
-                    "MA_Val": round(float(ma_val), 2),
-                    "Diff_Val": diff_pct,
-                    "Diff_Str": f"{diff_pct:+.2f}%"
+                    "MA_Days": ma_days,
+                    "Diff_Val": abs(diff_ratio),
+                    "Diff_Str": f"{diff_ratio*100:+.2f}%",
+                    "Earnings": earnings_date,
+                    "Warning": is_near_earnings
                 })
-        except:
-            continue
+        except: continue
 
-    passed = sorted(passed, key=lambda x: abs(x['Diff_Val']))
-    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    passed = sorted(passed, key=lambda x: x['Diff_Val'])
+    now = today.strftime("%Y-%m-%d %H:%M:%S")
     
-    # --- HTML 生成 (連結改為 Finviz) ---
     rows = ""
     for x in passed:
-        color_class = "text-success" if x['Diff_Val'] >= 0 else "text-danger"
+        # 如果接近財報日，使用警告色背景 (Bootstrap table-danger)
+        bg_style = "background-color: #fff5f5;" if x['Warning'] else ""
+        warning_tag = '<span class="badge bg-danger ms-2">⚠️ 財報預警</span>' if x['Warning'] else ""
+        
         rows += f"""
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t={x['Symbol']}" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   {x['Symbol']} 🔍
-                </a>
-            </td>
-            <td>${x['Price']}</td>
-            <td><span class="badge bg-secondary">{x['MA_Type']}</span> ${x['MA_Val']}</td>
-            <td class="{color_class} fw-bold">{x['Diff_Str']}</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>"""
+        <div class="card mb-4 shadow border-0" style="{bg_style}">
+            <div class="card-header d-flex justify-content-between align-items-center {'bg-danger text-white' if x['Warning'] else 'bg-primary text-white'}">
+                <h5 class="mb-0">{x['Name']} ({x['Symbol']}) {warning_tag}</h5>
+                <span class="badge {'bg-light text-danger' if x['Warning'] else 'bg-light text-dark'}">
+                    下次財報: {x['Earnings']}
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>{x['MA_Days']}MA 偏離:</b> {x['Diff_Str']}</span>
+                    <span><b>目前股價:</b> ${x['Price']}</span>
+                </div>
+                <div id="tv_{x['Symbol']}" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({{
+                  "autosize": true, "symbol": "{x['Symbol']}", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_{x['Symbol']}", "hide_top_toolbar": true,
+                  "studies": [ {{ "id": "MASimple@tv-basicstudies", "inputs": {{ "length": {x['MA_Days']} }} }} ]
+                }});
+                </script>
+            </div>
+        </div>"""
 
     html_content = f"""
     <!DOCTYPE html>
     <html lang="zh-TW">
     <head>
         <meta charset="UTF-8">
-        <title>均線回測篩選報告 (Finviz)</title>
+        <title>均線回測+財報預警</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <style>
-            body {{ background-color: #0f172a; color: #f1f5f9; }}
-            .card {{ background-color: #1e293b; border: none; border-radius: 15px; }}
-            .table {{ color: #cbd5e1; }}
-            .btn-outline-warning {{ color: #fbbf24; border-color: #fbbf24; }}
-        </style>
+        <style>body {{ background-color: #f4f7f6; }} .container {{ max-width: 800px; }}</style>
     </head>
-    <body class="p-5">
-        <div class="container card shadow-lg p-4">
-            <h2 class="text-warning">🎯 均線支撐追蹤 (Finviz 版)</h2>
-            <p class="text-secondary small">更新時間 (UTC): {now} | 條件: 股價於均線 ±1% 範圍內</p>
-            <div class="table-responsive">
-                <table class="table table-hover mt-3">
-                    <thead><tr><th>代碼 (Finviz 看圖)</th><th>現價</th><th>基準均線</th><th>偏離距離</th><th>狀態</th></tr></thead>
-                    <tbody>{rows if passed else '<tr><td colspan="5" class="text-center py-5">目前無標的在均線 1% 範圍內</td></tr>'}</tbody>
-                </table>
-            </div>
+    <body class="py-5"><div class="container">
+        <h2 class="text-center mb-4">🎯 均線回測標的 (含財報預警)</h2>
+        <div class="text-center mb-4">
+            <span class="badge bg-danger">紅色：7天內公佈財報</span>
+            <span class="badge bg-primary">藍色：正常觀察</span>
         </div>
-    </body>
-    </html>"""
+        {rows if passed else '<div class="text-center p-5">目前無標的在 1% 範圍內</div>'}
+    </div></body></html>"""
     
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html_content)
