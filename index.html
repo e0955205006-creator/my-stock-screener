@@ -3,35 +3,45 @@
     <html lang="zh-TW">
     <head>
         <meta charset="UTF-8">
-        <title>均線回測+財報預警</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>均線回測報告</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <style>body { background-color: #f4f7f6; } .container { max-width: 800px; }</style>
+        <style>
+            body { background-color: #f4f7f6; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+            .container { max-width: 850px; }
+            .card { transition: transform 0.2s; }
+            .card:hover { transform: scale(1.01); }
+        </style>
     </head>
-    <body class="py-5"><div class="container">
-        <h2 class="text-center mb-4">🎯 均線回測標的 (含財報預警)</h2>
-        <div class="text-center mb-4">
-            <span class="badge bg-danger">紅色：7天內公佈財報</span>
-            <span class="badge bg-primary">藍色：正常觀察</span>
-        </div>
-        
+    <body class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-2">🎯 精選均線回測標的</h2>
+            <p class="text-center text-muted small">依偏離度排序 (+0.99% → -0.99%)<br>更新時間: 2026-05-09 21:21:40 (UTC)</p>
+            <div class="d-flex justify-content-center mb-4 gap-2">
+                <span class="badge bg-success">均線上</span>
+                <span class="badge bg-danger">均線下</span>
+                <span class="badge bg-warning text-dark">⚠️ 近期財報</span>
+            </div>
+            <hr>
+            
         <div class="card mb-4 shadow border-0" style="">
             <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">Ross Stores, Inc. (ROST) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-05-21
-                </span>
+                <h5 class="mb-0">Verizon Communications (VZ) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-07-21</span>
             </div>
             <div class="card-body p-3">
                 <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> -0.03%</span>
-                    <span><b>目前股價:</b> $225.81</span>
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-success">+0.97%</span></span>
+                    <span><b>目前股價:</b> $47.22</span>
                 </div>
-                <div id="tv_ROST" style="height: 400px;"></div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_VZ" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
                 new TradingView.widget({
-                  "autosize": true, "symbol": "ROST", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_ROST", "hide_top_toolbar": true,
+                  "autosize": true, "symbol": "VZ", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_VZ", "hide_top_toolbar": true, "save_image": false,
                   "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
                 });
                 </script>
@@ -39,643 +49,22 @@
         </div>
         <div class="card mb-4 shadow border-0" style="">
             <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">Aramark (ARMK) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-05-12
-                </span>
+                <h5 class="mb-0">AutoNation, (AN) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-07-31</span>
             </div>
             <div class="card-body p-3">
                 <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> -0.06%</span>
-                    <span><b>目前股價:</b> $45.08</span>
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-success">+0.90%</span></span>
+                    <span><b>目前股價:</b> $205.97</span>
                 </div>
-                <div id="tv_ARMK" style="height: 400px;"></div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_AN" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
                 new TradingView.widget({
-                  "autosize": true, "symbol": "ARMK", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_ARMK", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">Omnicom Group Inc. (OMC) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-07-21
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> -0.06%</span>
-                    <span><b>目前股價:</b> $77.06</span>
-                </div>
-                <div id="tv_OMC" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "OMC", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_OMC", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">Evergy, Inc. (EVRG) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-08-06
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> +0.06%</span>
-                    <span><b>目前股價:</b> $81.78</span>
-                </div>
-                <div id="tv_EVRG" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "EVRG", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_EVRG", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">CSG Systems International, Inc. (CSGS) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-08-05
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> +0.07%</span>
-                    <span><b>目前股價:</b> $80.38</span>
-                </div>
-                <div id="tv_CSGS" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "CSGS", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_CSGS", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">American States Water Company (AWR) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-08-05
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> +0.10%</span>
-                    <span><b>目前股價:</b> $77.2</span>
-                </div>
-                <div id="tv_AWR" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "AWR", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_AWR", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">Canadian National Railway Compa (CNI) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-07-24
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> +0.23%</span>
-                    <span><b>目前股價:</b> $111.64</span>
-                </div>
-                <div id="tv_CNI" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "CNI", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_CNI", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">Microsoft Corporation (MSFT) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-07-29
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> -0.25%</span>
-                    <span><b>目前股價:</b> $415.12</span>
-                </div>
-                <div id="tv_MSFT" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "MSFT", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_MSFT", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">The Cheesecake Factory Incorpor (CAKE) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-07-28
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> +0.26%</span>
-                    <span><b>目前股價:</b> $61.65</span>
-                </div>
-                <div id="tv_CAKE" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "CAKE", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_CAKE", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">Chesapeake Utilities Corporatio (CPK) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-08-06
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> -0.30%</span>
-                    <span><b>目前股價:</b> $126.42</span>
-                </div>
-                <div id="tv_CPK" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "CPK", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_CPK", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">AMETEK, Inc. (AME) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-07-30
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> -0.33%</span>
-                    <span><b>目前股價:</b> $232.4</span>
-                </div>
-                <div id="tv_AME" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "AME", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_AME", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">Visa Inc. (V) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-07-28
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>19MA 偏離:</b> +0.41%</span>
-                    <span><b>目前股價:</b> $318.79</span>
-                </div>
-                <div id="tv_V" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "V", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_V", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 19 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">Artesian Resources Corporation (ARTNA) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-08-03
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> +0.42%</span>
-                    <span><b>目前股價:</b> $32.04</span>
-                </div>
-                <div id="tv_ARTNA" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "ARTNA", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_ARTNA", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">Alliant Energy Corporation (LNT) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-04-30
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> -0.47%</span>
-                    <span><b>目前股價:</b> $71.76</span>
-                </div>
-                <div id="tv_LNT" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "LNT", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_LNT", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">BJ's Wholesale Club Holdings, I (BJ) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-05-21
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> -0.50%</span>
-                    <span><b>目前股價:</b> $92.97</span>
-                </div>
-                <div id="tv_BJ" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "BJ", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_BJ", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">Flanigan's Enterprises, Inc. (BDL) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: N/A
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> -0.56%</span>
-                    <span><b>目前股價:</b> $30.53</span>
-                </div>
-                <div id="tv_BDL" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "BDL", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_BDL", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">Moody's Corporation (MCO) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-07-23
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> -0.60%</span>
-                    <span><b>目前股價:</b> $451.32</span>
-                </div>
-                <div id="tv_MCO" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "MCO", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_MCO", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">MSCI Inc. (MSCI) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-07-21
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> +0.60%</span>
-                    <span><b>目前股價:</b> $585.42</span>
-                </div>
-                <div id="tv_MSCI" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "MSCI", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_MSCI", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">Darden Restaurants, Inc. (DRI) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-03-19
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> -0.64%</span>
-                    <span><b>目前股價:</b> $196.23</span>
-                </div>
-                <div id="tv_DRI" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "DRI", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_DRI", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">Intuit Inc. (INTU) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-05-20
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> +0.67%</span>
-                    <span><b>目前股價:</b> $396.31</span>
-                </div>
-                <div id="tv_INTU" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "INTU", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_INTU", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">IDACORP, Inc. (IDA) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-07-30
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> -0.71%</span>
-                    <span><b>目前股價:</b> $144.0</span>
-                </div>
-                <div id="tv_IDA" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "IDA", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_IDA", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">Miller Industries, Inc. (MLR) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-08-05
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> +0.72%</span>
-                    <span><b>目前股價:</b> $48.07</span>
-                </div>
-                <div id="tv_MLR" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "MLR", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_MLR", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">Toro Company (The) (TTC) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-06-04
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> +0.74%</span>
-                    <span><b>目前股價:</b> $95.5</span>
-                </div>
-                <div id="tv_TTC" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "TTC", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_TTC", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">AGCO Corporation (AGCO) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-07-30
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> -0.75%</span>
-                    <span><b>目前股價:</b> $117.34</span>
-                </div>
-                <div id="tv_AGCO" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "AGCO", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_AGCO", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">The Trade Desk, Inc. (TTD) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-08-06
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> -0.75%</span>
-                    <span><b>目前股價:</b> $23.08</span>
-                </div>
-                <div id="tv_TTD" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "TTD", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_TTD", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">Charles River Laboratories Inte (CRL) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-08-05
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> +0.82%</span>
-                    <span><b>目前股價:</b> $177.62</span>
-                </div>
-                <div id="tv_CRL" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "CRL", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_CRL", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">Curtiss-Wright Corporation (CW) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-08-05
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> +0.82%</span>
-                    <span><b>目前股價:</b> $729.2</span>
-                </div>
-                <div id="tv_CW" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "CW", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_CW", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">Dover Corporation (DOV) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-07-23
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> -0.86%</span>
-                    <span><b>目前股價:</b> $219.83</span>
-                </div>
-                <div id="tv_DOV" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "DOV", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_DOV", "hide_top_toolbar": true,
-                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
-                });
-                </script>
-            </div>
-        </div>
-        <div class="card mb-4 shadow border-0" style="">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">Costco Wholesale Corporation (COST) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-05-28
-                </span>
-            </div>
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> +0.86%</span>
-                    <span><b>目前股價:</b> $1008.79</span>
-                </div>
-                <div id="tv_COST" style="height: 400px;"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true, "symbol": "COST", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_COST", "hide_top_toolbar": true,
+                  "autosize": true, "symbol": "AN", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_AN", "hide_top_toolbar": true, "save_image": false,
                   "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
                 });
                 </script>
@@ -684,21 +73,21 @@
         <div class="card mb-4 shadow border-0" style="">
             <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
                 <h5 class="mb-0">Carlisle Companies Incorporated (CSL) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-04-23
-                </span>
+                <span class="badge bg-light text-dark">下次財報: 2026-04-23</span>
             </div>
             <div class="card-body p-3">
                 <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> +0.87%</span>
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-success">+0.87%</span></span>
                     <span><b>目前股價:</b> $360.39</span>
                 </div>
+                <!-- TradingView 互動圖表 -->
                 <div id="tv_CSL" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
                 new TradingView.widget({
-                  "autosize": true, "symbol": "CSL", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_CSL", "hide_top_toolbar": true,
+                  "autosize": true, "symbol": "CSL", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_CSL", "hide_top_toolbar": true, "save_image": false,
                   "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
                 });
                 </script>
@@ -706,22 +95,22 @@
         </div>
         <div class="card mb-4 shadow border-0" style="">
             <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">AutoNation, Inc. (AN) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-07-31
-                </span>
+                <h5 class="mb-0">Costco Wholesale (COST) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-05-28</span>
             </div>
             <div class="card-body p-3">
                 <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> +0.90%</span>
-                    <span><b>目前股價:</b> $205.97</span>
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-success">+0.86%</span></span>
+                    <span><b>目前股價:</b> $1008.79</span>
                 </div>
-                <div id="tv_AN" style="height: 400px;"></div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_COST" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
                 new TradingView.widget({
-                  "autosize": true, "symbol": "AN", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_AN", "hide_top_toolbar": true,
+                  "autosize": true, "symbol": "COST", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_COST", "hide_top_toolbar": true, "save_image": false,
                   "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
                 });
                 </script>
@@ -729,22 +118,22 @@
         </div>
         <div class="card mb-4 shadow border-0" style="">
             <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">Verizon Communications Inc. (VZ) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-07-21
-                </span>
+                <h5 class="mb-0">Curtiss-Wright (CW) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-08-05</span>
             </div>
             <div class="card-body p-3">
                 <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> +0.97%</span>
-                    <span><b>目前股價:</b> $47.22</span>
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-success">+0.82%</span></span>
+                    <span><b>目前股價:</b> $729.2</span>
                 </div>
-                <div id="tv_VZ" style="height: 400px;"></div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_CW" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
                 new TradingView.widget({
-                  "autosize": true, "symbol": "VZ", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_VZ", "hide_top_toolbar": true,
+                  "autosize": true, "symbol": "CW", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_CW", "hide_top_toolbar": true, "save_image": false,
                   "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
                 });
                 </script>
@@ -752,25 +141,648 @@
         </div>
         <div class="card mb-4 shadow border-0" style="">
             <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="mb-0">Xcel Energy Inc. (XEL) </h5>
-                <span class="badge bg-light text-dark">
-                    下次財報: 2026-07-30
-                </span>
+                <h5 class="mb-0">Charles River Laboratories Inte (CRL) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-08-05</span>
             </div>
             <div class="card-body p-3">
                 <div class="d-flex justify-content-between mb-2">
-                    <span><b>20MA 偏離:</b> -0.97%</span>
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-success">+0.82%</span></span>
+                    <span><b>目前股價:</b> $177.62</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_CRL" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "CRL", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_CRL", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Toro Company (The) (TTC) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-06-04</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-success">+0.74%</span></span>
+                    <span><b>目前股價:</b> $95.5</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_TTC" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "TTC", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_TTC", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Miller Industries, (MLR) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-08-05</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-success">+0.72%</span></span>
+                    <span><b>目前股價:</b> $48.07</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_MLR" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "MLR", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_MLR", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Intuit (INTU) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-05-20</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-success">+0.67%</span></span>
+                    <span><b>目前股價:</b> $396.31</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_INTU" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "INTU", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_INTU", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">MSCI (MSCI) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-07-21</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-success">+0.60%</span></span>
+                    <span><b>目前股價:</b> $585.42</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_MSCI" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "MSCI", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_MSCI", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Artesian Resources (ARTNA) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-08-03</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-success">+0.42%</span></span>
+                    <span><b>目前股價:</b> $32.04</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_ARTNA" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "ARTNA", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_ARTNA", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Visa (V) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-07-28</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>19MA 偏離距離:</b> <span class="badge bg-success">+0.41%</span></span>
+                    <span><b>目前股價:</b> $318.79</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_V" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "V", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_V", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 19 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">The Cheesecake Factory Incorpor (CAKE) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-07-28</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-success">+0.26%</span></span>
+                    <span><b>目前股價:</b> $61.65</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_CAKE" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "CAKE", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_CAKE", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Canadian National Railway Compa (CNI) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-07-24</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-success">+0.23%</span></span>
+                    <span><b>目前股價:</b> $111.64</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_CNI" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "CNI", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_CNI", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">American States Water Company (AWR) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-08-05</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-success">+0.10%</span></span>
+                    <span><b>目前股價:</b> $77.2</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_AWR" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "AWR", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_AWR", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">CSG Systems International, (CSGS) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-08-05</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-success">+0.07%</span></span>
+                    <span><b>目前股價:</b> $80.38</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_CSGS" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "CSGS", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_CSGS", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Evergy, (EVRG) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-08-06</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-success">+0.06%</span></span>
+                    <span><b>目前股價:</b> $81.78</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_EVRG" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "EVRG", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_EVRG", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Ross Stores, (ROST) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-05-21</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-danger">-0.03%</span></span>
+                    <span><b>目前股價:</b> $225.81</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_ROST" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "ROST", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_ROST", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Aramark (ARMK) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-05-12</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-danger">-0.06%</span></span>
+                    <span><b>目前股價:</b> $45.08</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_ARMK" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "ARMK", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_ARMK", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Omnicom Group (OMC) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-07-21</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-danger">-0.06%</span></span>
+                    <span><b>目前股價:</b> $77.06</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_OMC" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "OMC", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_OMC", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Microsoft (MSFT) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-07-29</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-danger">-0.25%</span></span>
+                    <span><b>目前股價:</b> $415.12</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_MSFT" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "MSFT", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_MSFT", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Chesapeake Utilities Corporatio (CPK) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-08-06</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-danger">-0.30%</span></span>
+                    <span><b>目前股價:</b> $126.42</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_CPK" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "CPK", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_CPK", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">AMETEK, (AME) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-07-30</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-danger">-0.33%</span></span>
+                    <span><b>目前股價:</b> $232.4</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_AME" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "AME", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_AME", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Alliant Energy (LNT) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-04-30</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-danger">-0.47%</span></span>
+                    <span><b>目前股價:</b> $71.76</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_LNT" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "LNT", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_LNT", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">BJ's Wholesale Club Holdings, I (BJ) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-05-21</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-danger">-0.50%</span></span>
+                    <span><b>目前股價:</b> $92.97</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_BJ" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "BJ", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_BJ", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Flanigan's Enterprises, (BDL) </h5>
+                <span class="badge bg-light text-dark">下次財報: N/A</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-danger">-0.56%</span></span>
+                    <span><b>目前股價:</b> $30.53</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_BDL" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "BDL", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_BDL", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Moody's (MCO) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-07-23</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-danger">-0.60%</span></span>
+                    <span><b>目前股價:</b> $451.32</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_MCO" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "MCO", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_MCO", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Darden Restaurants, (DRI) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-03-19</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-danger">-0.64%</span></span>
+                    <span><b>目前股價:</b> $196.23</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_DRI" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "DRI", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_DRI", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">IDACORP, (IDA) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-07-30</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-danger">-0.71%</span></span>
+                    <span><b>目前股價:</b> $144.0</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_IDA" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "IDA", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_IDA", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">AGCO (AGCO) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-07-30</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-danger">-0.75%</span></span>
+                    <span><b>目前股價:</b> $117.34</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_AGCO" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "AGCO", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_AGCO", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">The Trade Desk, (TTD) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-08-06</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-danger">-0.75%</span></span>
+                    <span><b>目前股價:</b> $23.08</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_TTD" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "TTD", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_TTD", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Dover (DOV) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-07-23</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-danger">-0.86%</span></span>
+                    <span><b>目前股價:</b> $219.83</span>
+                </div>
+                <!-- TradingView 互動圖表 -->
+                <div id="tv_DOV" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "DOV", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_DOV", "hide_top_toolbar": true, "save_image": false,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Xcel Energy (XEL) </h5>
+                <span class="badge bg-light text-dark">下次財報: 2026-07-30</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離距離:</b> <span class="badge bg-danger">-0.97%</span></span>
                     <span><b>目前股價:</b> $79.39</span>
                 </div>
+                <!-- TradingView 互動圖表 -->
                 <div id="tv_XEL" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
                 new TradingView.widget({
-                  "autosize": true, "symbol": "XEL", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_XEL", "hide_top_toolbar": true,
+                  "autosize": true, "symbol": "XEL", "interval": "D", "timezone": "Etc/UTC",
+                  "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_XEL", "hide_top_toolbar": true, "save_image": false,
                   "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
                 });
                 </script>
             </div>
         </div>
-    </div></body></html>
+        </div>
+    </body>
+    </html>
