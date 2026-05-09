@@ -40,65 +40,67 @@ TICKERS = [
 
 def get_clean_name(ticker_obj, symbol):
     try:
-        # 優先用快速 info 抓取，失敗則回傳代碼
-        name = ticker_obj.info.get('shortName', symbol)
+        # 使用更安全的 get 方式
+        info = ticker_obj.info
+        name = info.get('shortName') or info.get('longName') or symbol
         for suffix in [" Inc.", " Corp.", " Corporation", " Ltd.", " plc"]:
             name = name.replace(suffix, "")
         return name
     except:
         return symbol
 
-def fetch_earnings_date(t_obj, today_date):
-    """ 強化的財報抓取函數，包含重試機制 """
-    for _ in range(3):  # 最多重試 3 次
-        try:
-            # 優先嘗試 get_calendar
-            cal = t_obj.get_calendar()
-            if cal and 'Earnings Date' in cal:
-                e_dt = cal['Earnings Date'][0].replace(tzinfo=None)
-                return e_dt.date()
-            
-            # 次要嘗試 get_earnings_dates
-            e_df = t_obj.get_earnings_dates()
-            if e_df is not None and not e_df.empty:
-                e_df.index = e_df.index.tz_localize(None)
-                future = e_df.index[e_df.index.date >= today_date]
-                if not future.empty:
-                    return future.min().date()
-        except:
-            time.sleep(1) # 失敗就等一秒再試
-            continue
+def fetch_earnings_date_safe(t_obj, today_date):
+    """ 終極安全版：確保任何錯誤都不會導致程式崩潰 """
+    try:
+        # 方法 1: calendar (最常見)
+        cal = t_obj.get_calendar()
+        if cal and isinstance(cal, dict) and 'Earnings Date' in cal:
+            d_list = cal['Earnings Date']
+            if d_list and len(d_list) > 0:
+                return d_list[0].replace(tzinfo=None).date()
+        
+        # 方法 2: earnings_dates (yfinance 備援)
+        e_df = t_obj.get_earnings_dates()
+        if e_df is not None and not e_df.empty:
+            e_df.index = e_df.index.tz_localize(None)
+            # 找出未來最接近的一個
+            future = e_df.index[e_df.index.date >= today_date]
+            if not future.empty:
+                return future.min().date()
+    except:
+        pass
     return None
 
 def main():
-    # 建立偽裝 Session
     session = requests.Session()
     session.headers.update({
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     })
 
-    data = yf.download(TICKERS, period="100d", interval="1d", progress=False, session=session)['Close']
+    # 一次性下載所有股價，避免循環請求
+    data = yf.download(TICKERS, period="150d", interval="1d", progress=False, session=session)['Close']
     passed = []
     today = datetime.datetime.now()
     today_date = today.date()
     
     for ticker in TICKERS:
         try:
+            # 股價基礎檢查
+            if ticker not in data.columns: continue
             col = data[ticker].dropna()
-            if col.empty: continue
+            if len(col) < 60: continue
             
             ma_days, specific_range = CUSTOM_CONFIG.get(ticker, (DEFAULT_MA, SEARCH_RANGE))
-            if len(col) < ma_days: continue
-            
             ma_val = col.rolling(ma_days).mean().iloc[-1]
             price = col.iloc[-1]
             diff_ratio = (price / ma_val) - 1
             
+            # 篩選邏輯
             if abs(diff_ratio) <= specific_range:
                 t_obj = yf.Ticker(ticker, session=session)
                 
-                # 使用強化函數抓取日期
-                e_date = fetch_earnings_date(t_obj, today_date)
+                # 安全抓取日期
+                e_date = fetch_earnings_date_safe(t_obj, today_date)
                 
                 earnings_str = "N/A"
                 is_near = False
@@ -119,13 +121,17 @@ def main():
                     "Earnings": earnings_str,
                     "Warning": is_near
                 })
-                time.sleep(0.5) # 增加間隔防止被封 IP
-                
-        except: continue
+                # 每個 Ticker 稍微停頓，保護 API
+                time.sleep(0.3)
+        except Exception as e:
+            print(f"跳過 {ticker}，原因: {e}")
+            continue
 
+    # 排序
     passed.sort(key=lambda x: x['Diff_Val'], reverse=True)
     
-    now = today.strftime("%Y-%m-%d %H:%M:%S")
+    # HTML 生成 (保持與之前一致)
+    now_str = today.strftime("%Y-%m-%d %H:%M:%S")
     rows = ""
     for x in passed:
         badge_color = "bg-success" if x['Diff_Val'] >= 0 else "bg-danger"
@@ -173,7 +179,7 @@ def main():
     <body class="py-5">
         <div class="container">
             <h2 class="text-center mb-2">🎯 精選均線回測標的</h2>
-            <p class="text-center text-muted small">依偏離度排序 (+0.99% → -0.99%)<br>更新時間: {now} (UTC)</p>
+            <p class="text-center text-muted small">依偏離度排序 (+0.99% → -0.99%)<br>更新時間: {now_str} (UTC)</p>
             <hr>
             {rows if passed else '<div class="alert alert-info text-center">目前無標的在均線 1% 範圍內</div>'}
         </div>
