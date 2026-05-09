@@ -39,7 +39,8 @@ TICKERS = [
 
 def get_clean_name(ticker_obj, symbol):
     try:
-        name = ticker_obj.info.get('shortName') or ticker_obj.info.get('longName') or symbol
+        info = ticker_obj.info
+        name = info.get('shortName') or info.get('longName') or symbol
         for suffix in [" Inc.", " Corp.", " Corporation", " Ltd.", " plc"]:
             name = name.replace(suffix, "")
         return name
@@ -47,11 +48,10 @@ def get_clean_name(ticker_obj, symbol):
         return symbol
 
 def main():
-    # 抓取股價數據
     data = yf.download(TICKERS, period="100d", interval="1d", progress=False)['Close']
     passed = []
     today = datetime.datetime.now()
-    today_date = today.date() # 取得今天純日期
+    today_date = today.date()
     
     for ticker in TICKERS:
         try:
@@ -65,25 +65,42 @@ def main():
             price = col.iloc[-1]
             diff_ratio = (price / ma_val) - 1
             
-            # 判斷是否在搜尋範圍內
             if abs(diff_ratio) <= specific_range:
                 t_obj = yf.Ticker(ticker)
                 
-                # --- 財報預警修正區 ---
+                # --- 強化版財報抓取邏輯 ---
                 earnings_date = "N/A"
                 is_near_earnings = False
+                
                 try:
+                    # 優先嘗試 calendar
                     cal = t_obj.calendar
-                    if 'Earnings Date' in cal and cal['Earnings Date']:
-                        e_dt = cal['Earnings Date'][0].replace(tzinfo=None)
-                        e_date = e_dt.date() # 轉為純日期比較
+                    target_dt = None
+                    
+                    if cal is not None and not isinstance(cal, list) and 'Earnings Date' in cal:
+                        target_dt = cal['Earnings Date'][0]
+                    elif isinstance(cal, list) and len(cal) > 0: # 部分版本回傳 list
+                        target_dt = cal[0]
+
+                    # 如果 calendar 失敗，嘗試 earnings_dates (yfinance 新版建議)
+                    if target_dt is None:
+                        e_dates = t_obj.earnings_dates
+                        if e_dates is not None and not e_dates.empty:
+                            # 找出大於等於今天的日期
+                            future_dates = e_dates.index[e_dates.index.tz_localize(None).date >= today_date]
+                            if not future_dates.empty:
+                                target_dt = future_dates[-1] # 取最近的一個
+
+                    if target_dt is not None:
+                        # 統一轉為純日期
+                        e_date = target_dt.replace(tzinfo=None).date()
                         earnings_date = e_date.strftime('%Y-%m-%d')
                         
-                        # 計算天數差 (0-7 天內預警)
                         delta = (e_date - today_date).days
                         if 0 <= delta <= 7:
                             is_near_earnings = True
-                except: pass
+                except Exception as e:
+                    print(f"Error fetching earnings for {ticker}: {e}")
 
                 passed.append({
                     "Symbol": ticker,
@@ -97,16 +114,15 @@ def main():
                 })
         except: continue
 
-    # --- 排序：從最高正偏離排到最低負偏離 (+0.99% -> -0.99%) ---
     passed.sort(key=lambda x: x['Diff_Val'], reverse=True)
     
     now = today.strftime("%Y-%m-%d %H:%M:%S")
     rows = ""
     for x in passed:
-        # 視覺樣式邏輯
         badge_color = "bg-success" if x['Diff_Val'] >= 0 else "bg-danger"
-        bg_style = "background-color: #fff5f5;" if x['Warning'] else ""
+        # 如果有預警，強制讓 Header 變紅，背景變粉紅
         header_color = "bg-danger" if x['Warning'] else "bg-primary"
+        bg_style = "background-color: #fff5f5;" if x['Warning'] else ""
         warning_tag = '<span class="badge bg-warning text-dark ms-2">⚠️ 近期財報</span>' if x['Warning'] else ""
         
         rows += f"""
@@ -126,7 +142,7 @@ def main():
                 new TradingView.widget({{
                   "autosize": true, "symbol": "{x['Symbol']}", "interval": "D", "timezone": "Etc/UTC",
                   "theme": "light", "style": "1", "locale": "zh_TW",
-                  "container_id": "tv_{x['Symbol']}", "hide_top_toolbar": true, "save_image": false,
+                  "container_id": "tv_{x['Symbol']}", "hide_top_toolbar": true,
                   "studies": [ {{ "id": "MASimple@tv-basicstudies", "inputs": {{ "length": {x['MA_Days']} }} }} ]
                 }});
                 </script>
@@ -144,8 +160,6 @@ def main():
         <style>
             body {{ background-color: #f4f7f6; }}
             .container {{ max-width: 850px; }}
-            .card {{ transition: transform 0.2s; }}
-            .card:hover {{ transform: scale(1.005); }}
         </style>
     </head>
     <body class="py-5">
