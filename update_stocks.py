@@ -2,6 +2,7 @@ import yfinance as yf
 import pandas as pd
 import datetime
 import time
+import requests
 
 # --- 1. 參數與自定義區 ---
 SEARCH_RANGE = 0.01  
@@ -39,17 +40,44 @@ TICKERS = [
 
 def get_clean_name(ticker_obj, symbol):
     try:
-        info = ticker_obj.info
-        name = info.get('shortName') or info.get('longName') or symbol
+        # 優先用快速 info 抓取，失敗則回傳代碼
+        name = ticker_obj.info.get('shortName', symbol)
         for suffix in [" Inc.", " Corp.", " Corporation", " Ltd.", " plc"]:
             name = name.replace(suffix, "")
         return name
     except:
         return symbol
 
+def fetch_earnings_date(t_obj, today_date):
+    """ 強化的財報抓取函數，包含重試機制 """
+    for _ in range(3):  # 最多重試 3 次
+        try:
+            # 優先嘗試 get_calendar
+            cal = t_obj.get_calendar()
+            if cal and 'Earnings Date' in cal:
+                e_dt = cal['Earnings Date'][0].replace(tzinfo=None)
+                return e_dt.date()
+            
+            # 次要嘗試 get_earnings_dates
+            e_df = t_obj.get_earnings_dates()
+            if e_df is not None and not e_df.empty:
+                e_df.index = e_df.index.tz_localize(None)
+                future = e_df.index[e_df.index.date >= today_date]
+                if not future.empty:
+                    return future.min().date()
+        except:
+            time.sleep(1) # 失敗就等一秒再試
+            continue
+    return None
+
 def main():
-    # 下載數據
-    data = yf.download(TICKERS, period="100d", interval="1d", progress=False)['Close']
+    # 建立偽裝 Session
+    session = requests.Session()
+    session.headers.update({
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    })
+
+    data = yf.download(TICKERS, period="100d", interval="1d", progress=False, session=session)['Close']
     passed = []
     today = datetime.datetime.now()
     today_date = today.date()
@@ -67,43 +95,19 @@ def main():
             diff_ratio = (price / ma_val) - 1
             
             if abs(diff_ratio) <= specific_range:
-                t_obj = yf.Ticker(ticker)
+                t_obj = yf.Ticker(ticker, session=session)
                 
-                # --- 強制獲取財報日期邏輯 ---
-                earnings_date = "N/A"
-                is_near_earnings = False
+                # 使用強化函數抓取日期
+                e_date = fetch_earnings_date(t_obj, today_date)
                 
-                # 方案 A: 透過 calendar 屬性 (最準確但易失敗)
-                try:
-                    cal = t_obj.get_calendar()
-                    if cal and 'Earnings Date' in cal:
-                        target_dt = cal['Earnings Date'][0]
-                        e_date = target_dt.replace(tzinfo=None).date()
-                        earnings_date = e_date.strftime('%Y-%m-%d')
-                except:
-                    pass
-
-                # 方案 B: 如果 A 失敗，嘗試 earnings_dates 歷史表 (獲取未來的日期)
-                if earnings_date == "N/A":
-                    try:
-                        e_df = t_obj.get_earnings_dates()
-                        if e_df is not None and not e_df.empty:
-                            # 移除時區並過濾出今天以後的日期
-                            e_df.index = e_df.index.tz_localize(None)
-                            future_dates = e_df.index[e_df.index.date >= today_date]
-                            if not future_dates.empty:
-                                # 取最接近今天的一個
-                                e_date = future_dates.min().date()
-                                earnings_date = e_date.strftime('%Y-%m-%d')
-                    except:
-                        pass
-
-                # 判定預警 (只要日期不是 N/A 就計算天數)
-                if earnings_date != "N/A":
-                    e_date_obj = datetime.datetime.strptime(earnings_date, '%Y-%m-%d').date()
-                    delta = (e_date_obj - today_date).days
+                earnings_str = "N/A"
+                is_near = False
+                
+                if e_date:
+                    earnings_str = e_date.strftime('%Y-%m-%d')
+                    delta = (e_date - today_date).days
                     if 0 <= delta <= 7:
-                        is_near_earnings = True
+                        is_near = True
 
                 passed.append({
                     "Symbol": ticker,
@@ -112,17 +116,13 @@ def main():
                     "MA_Days": ma_days,
                     "Diff_Val": float(diff_ratio), 
                     "Diff_Str": f"{diff_ratio*100:+.2f}%",
-                    "Earnings": earnings_date,
-                    "Warning": is_near_earnings
+                    "Earnings": earnings_str,
+                    "Warning": is_near
                 })
-                # 加入極短延遲避免 API 過載
-                time.sleep(0.1)
+                time.sleep(0.5) # 增加間隔防止被封 IP
                 
-        except Exception as e:
-            print(f"處理 {ticker} 時發生錯誤: {e}")
-            continue
+        except: continue
 
-    # 排序：從正到負
     passed.sort(key=lambda x: x['Diff_Val'], reverse=True)
     
     now = today.strftime("%Y-%m-%d %H:%M:%S")
