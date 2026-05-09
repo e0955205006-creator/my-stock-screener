@@ -2,7 +2,6 @@ import yfinance as yf
 import pandas as pd
 import datetime
 import time
-import requests
 
 # --- 1. 參數與自定義區 ---
 SEARCH_RANGE = 0.01  
@@ -40,7 +39,6 @@ TICKERS = [
 
 def get_clean_name(ticker_obj, symbol):
     try:
-        # 使用更安全的 get 方式
         info = ticker_obj.info
         name = info.get('shortName') or info.get('longName') or symbol
         for suffix in [" Inc.", " Corp.", " Corporation", " Ltd.", " plc"]:
@@ -49,67 +47,63 @@ def get_clean_name(ticker_obj, symbol):
     except:
         return symbol
 
-def fetch_earnings_date_safe(t_obj, today_date):
-    """ 終極安全版：確保任何錯誤都不會導致程式崩潰 """
-    try:
-        # 方法 1: calendar (最常見)
-        cal = t_obj.get_calendar()
-        if cal and isinstance(cal, dict) and 'Earnings Date' in cal:
-            d_list = cal['Earnings Date']
-            if d_list and len(d_list) > 0:
-                return d_list[0].replace(tzinfo=None).date()
-        
-        # 方法 2: earnings_dates (yfinance 備援)
-        e_df = t_obj.get_earnings_dates()
-        if e_df is not None and not e_df.empty:
-            e_df.index = e_df.index.tz_localize(None)
-            # 找出未來最接近的一個
-            future = e_df.index[e_df.index.date >= today_date]
-            if not future.empty:
-                return future.min().date()
-    except:
-        pass
-    return None
-
 def main():
-    session = requests.Session()
-    session.headers.update({
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-    })
-
-    # 一次性下載所有股價，避免循環請求
-    data = yf.download(TICKERS, period="150d", interval="1d", progress=False, session=session)['Close']
+    # 下載數據
+    data = yf.download(TICKERS, period="100d", interval="1d", progress=False)['Close']
     passed = []
     today = datetime.datetime.now()
     today_date = today.date()
     
     for ticker in TICKERS:
         try:
-            # 股價基礎檢查
-            if ticker not in data.columns: continue
             col = data[ticker].dropna()
-            if len(col) < 60: continue
+            if col.empty: continue
             
             ma_days, specific_range = CUSTOM_CONFIG.get(ticker, (DEFAULT_MA, SEARCH_RANGE))
+            if len(col) < ma_days: continue
+            
             ma_val = col.rolling(ma_days).mean().iloc[-1]
             price = col.iloc[-1]
             diff_ratio = (price / ma_val) - 1
             
-            # 篩選邏輯
             if abs(diff_ratio) <= specific_range:
-                t_obj = yf.Ticker(ticker, session=session)
+                t_obj = yf.Ticker(ticker)
                 
-                # 安全抓取日期
-                e_date = fetch_earnings_date_safe(t_obj, today_date)
+                # --- 強制獲取財報日期邏輯 ---
+                earnings_date = "N/A"
+                is_near_earnings = False
                 
-                earnings_str = "N/A"
-                is_near = False
-                
-                if e_date:
-                    earnings_str = e_date.strftime('%Y-%m-%d')
-                    delta = (e_date - today_date).days
+                # 方案 A: 透過 calendar 屬性 (最準確但易失敗)
+                try:
+                    cal = t_obj.get_calendar()
+                    if cal and 'Earnings Date' in cal:
+                        target_dt = cal['Earnings Date'][0]
+                        e_date = target_dt.replace(tzinfo=None).date()
+                        earnings_date = e_date.strftime('%Y-%m-%d')
+                except:
+                    pass
+
+                # 方案 B: 如果 A 失敗，嘗試 earnings_dates 歷史表 (獲取未來的日期)
+                if earnings_date == "N/A":
+                    try:
+                        e_df = t_obj.get_earnings_dates()
+                        if e_df is not None and not e_df.empty:
+                            # 移除時區並過濾出今天以後的日期
+                            e_df.index = e_df.index.tz_localize(None)
+                            future_dates = e_df.index[e_df.index.date >= today_date]
+                            if not future_dates.empty:
+                                # 取最接近今天的一個
+                                e_date = future_dates.min().date()
+                                earnings_date = e_date.strftime('%Y-%m-%d')
+                    except:
+                        pass
+
+                # 判定預警 (只要日期不是 N/A 就計算天數)
+                if earnings_date != "N/A":
+                    e_date_obj = datetime.datetime.strptime(earnings_date, '%Y-%m-%d').date()
+                    delta = (e_date_obj - today_date).days
                     if 0 <= delta <= 7:
-                        is_near = True
+                        is_near_earnings = True
 
                 passed.append({
                     "Symbol": ticker,
@@ -118,20 +112,20 @@ def main():
                     "MA_Days": ma_days,
                     "Diff_Val": float(diff_ratio), 
                     "Diff_Str": f"{diff_ratio*100:+.2f}%",
-                    "Earnings": earnings_str,
-                    "Warning": is_near
+                    "Earnings": earnings_date,
+                    "Warning": is_near_earnings
                 })
-                # 每個 Ticker 稍微停頓，保護 API
-                time.sleep(0.3)
+                # 加入極短延遲避免 API 過載
+                time.sleep(0.1)
+                
         except Exception as e:
-            print(f"跳過 {ticker}，原因: {e}")
+            print(f"處理 {ticker} 時發生錯誤: {e}")
             continue
 
-    # 排序
+    # 排序：從正到負
     passed.sort(key=lambda x: x['Diff_Val'], reverse=True)
     
-    # HTML 生成 (保持與之前一致)
-    now_str = today.strftime("%Y-%m-%d %H:%M:%S")
+    now = today.strftime("%Y-%m-%d %H:%M:%S")
     rows = ""
     for x in passed:
         badge_color = "bg-success" if x['Diff_Val'] >= 0 else "bg-danger"
@@ -179,7 +173,7 @@ def main():
     <body class="py-5">
         <div class="container">
             <h2 class="text-center mb-2">🎯 精選均線回測標的</h2>
-            <p class="text-center text-muted small">依偏離度排序 (+0.99% → -0.99%)<br>更新時間: {now_str} (UTC)</p>
+            <p class="text-center text-muted small">依偏離度排序 (+0.99% → -0.99%)<br>更新時間: {now} (UTC)</p>
             <hr>
             {rows if passed else '<div class="alert alert-info text-center">目前無標的在均線 1% 範圍內</div>'}
         </div>
