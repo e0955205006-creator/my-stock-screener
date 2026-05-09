@@ -3,454 +3,774 @@
     <html lang="zh-TW">
     <head>
         <meta charset="UTF-8">
-        <title>均線回測篩選報告 (Finviz)</title>
+        <title>均線回測+財報預警</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <style>
-            body { background-color: #0f172a; color: #f1f5f9; }
-            .card { background-color: #1e293b; border: none; border-radius: 15px; }
-            .table { color: #cbd5e1; }
-            .btn-outline-warning { color: #fbbf24; border-color: #fbbf24; }
-        </style>
+        <style>body { background-color: #f4f7f6; } .container { max-width: 800px; }</style>
     </head>
-    <body class="p-5">
-        <div class="container card shadow-lg p-4">
-            <h2 class="text-warning">🎯 均線支撐追蹤 (Finviz 版)</h2>
-            <p class="text-secondary small">更新時間 (UTC): 2026-05-09 00:14:11 | 條件: 股價於均線 ±1% 範圍內</p>
-            <div class="table-responsive">
-                <table class="table table-hover mt-3">
-                    <thead><tr><th>代碼 (Finviz 看圖)</th><th>現價</th><th>基準均線</th><th>偏離距離</th><th>狀態</th></tr></thead>
-                    <tbody>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=ROST" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   ROST 🔍
-                </a>
-            </td>
-            <td>$225.81</td>
-            <td><span class="badge bg-secondary">20MA</span> $225.88</td>
-            <td class="text-danger fw-bold">-0.03%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=ARMK" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   ARMK 🔍
-                </a>
-            </td>
-            <td>$45.08</td>
-            <td><span class="badge bg-secondary">20MA</span> $45.11</td>
-            <td class="text-danger fw-bold">-0.06%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=OMC" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   OMC 🔍
-                </a>
-            </td>
-            <td>$77.06</td>
-            <td><span class="badge bg-secondary">20MA</span> $77.11</td>
-            <td class="text-danger fw-bold">-0.06%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=EVRG" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   EVRG 🔍
-                </a>
-            </td>
-            <td>$81.78</td>
-            <td><span class="badge bg-secondary">20MA</span> $81.73</td>
-            <td class="text-success fw-bold">+0.06%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=CSGS" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   CSGS 🔍
-                </a>
-            </td>
-            <td>$80.38</td>
-            <td><span class="badge bg-secondary">20MA</span> $80.32</td>
-            <td class="text-success fw-bold">+0.07%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=AWR" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   AWR 🔍
-                </a>
-            </td>
-            <td>$77.2</td>
-            <td><span class="badge bg-secondary">20MA</span> $77.12</td>
-            <td class="text-success fw-bold">+0.10%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=CNI" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   CNI 🔍
-                </a>
-            </td>
-            <td>$111.64</td>
-            <td><span class="badge bg-secondary">20MA</span> $111.38</td>
-            <td class="text-success fw-bold">+0.23%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=MSFT" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   MSFT 🔍
-                </a>
-            </td>
-            <td>$415.12</td>
-            <td><span class="badge bg-secondary">20MA</span> $416.14</td>
-            <td class="text-danger fw-bold">-0.25%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=CAKE" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   CAKE 🔍
-                </a>
-            </td>
-            <td>$61.65</td>
-            <td><span class="badge bg-secondary">20MA</span> $61.49</td>
-            <td class="text-success fw-bold">+0.26%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=CPK" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   CPK 🔍
-                </a>
-            </td>
-            <td>$126.42</td>
-            <td><span class="badge bg-secondary">20MA</span> $126.8</td>
-            <td class="text-danger fw-bold">-0.30%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=AME" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   AME 🔍
-                </a>
-            </td>
-            <td>$232.4</td>
-            <td><span class="badge bg-secondary">20MA</span> $233.17</td>
-            <td class="text-danger fw-bold">-0.33%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=ARTNA" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   ARTNA 🔍
-                </a>
-            </td>
-            <td>$32.04</td>
-            <td><span class="badge bg-secondary">20MA</span> $31.91</td>
-            <td class="text-success fw-bold">+0.42%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=LNT" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   LNT 🔍
-                </a>
-            </td>
-            <td>$71.76</td>
-            <td><span class="badge bg-secondary">20MA</span> $72.1</td>
-            <td class="text-danger fw-bold">-0.47%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=BJ" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   BJ 🔍
-                </a>
-            </td>
-            <td>$92.97</td>
-            <td><span class="badge bg-secondary">20MA</span> $93.43</td>
-            <td class="text-danger fw-bold">-0.50%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=V" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   V 🔍
-                </a>
-            </td>
-            <td>$318.79</td>
-            <td><span class="badge bg-secondary">20MA</span> $317.08</td>
-            <td class="text-success fw-bold">+0.54%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=BDL" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   BDL 🔍
-                </a>
-            </td>
-            <td>$30.53</td>
-            <td><span class="badge bg-secondary">20MA</span> $30.7</td>
-            <td class="text-danger fw-bold">-0.56%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=MCO" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   MCO 🔍
-                </a>
-            </td>
-            <td>$451.32</td>
-            <td><span class="badge bg-secondary">20MA</span> $454.02</td>
-            <td class="text-danger fw-bold">-0.60%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=MSCI" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   MSCI 🔍
-                </a>
-            </td>
-            <td>$585.42</td>
-            <td><span class="badge bg-secondary">20MA</span> $581.92</td>
-            <td class="text-success fw-bold">+0.60%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=DRI" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   DRI 🔍
-                </a>
-            </td>
-            <td>$196.23</td>
-            <td><span class="badge bg-secondary">20MA</span> $197.49</td>
-            <td class="text-danger fw-bold">-0.64%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=INTU" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   INTU 🔍
-                </a>
-            </td>
-            <td>$396.31</td>
-            <td><span class="badge bg-secondary">20MA</span> $393.69</td>
-            <td class="text-success fw-bold">+0.67%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=IDA" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   IDA 🔍
-                </a>
-            </td>
-            <td>$144.0</td>
-            <td><span class="badge bg-secondary">20MA</span> $145.03</td>
-            <td class="text-danger fw-bold">-0.71%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=MLR" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   MLR 🔍
-                </a>
-            </td>
-            <td>$48.07</td>
-            <td><span class="badge bg-secondary">20MA</span> $47.73</td>
-            <td class="text-success fw-bold">+0.72%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=TTC" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   TTC 🔍
-                </a>
-            </td>
-            <td>$95.5</td>
-            <td><span class="badge bg-secondary">20MA</span> $94.8</td>
-            <td class="text-success fw-bold">+0.74%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=AGCO" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   AGCO 🔍
-                </a>
-            </td>
-            <td>$117.34</td>
-            <td><span class="badge bg-secondary">20MA</span> $118.22</td>
-            <td class="text-danger fw-bold">-0.75%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=TTD" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   TTD 🔍
-                </a>
-            </td>
-            <td>$23.08</td>
-            <td><span class="badge bg-secondary">20MA</span> $23.26</td>
-            <td class="text-danger fw-bold">-0.75%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=CRL" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   CRL 🔍
-                </a>
-            </td>
-            <td>$177.62</td>
-            <td><span class="badge bg-secondary">20MA</span> $176.17</td>
-            <td class="text-success fw-bold">+0.82%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=CW" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   CW 🔍
-                </a>
-            </td>
-            <td>$729.2</td>
-            <td><span class="badge bg-secondary">20MA</span> $723.24</td>
-            <td class="text-success fw-bold">+0.82%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=DOV" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   DOV 🔍
-                </a>
-            </td>
-            <td>$219.83</td>
-            <td><span class="badge bg-secondary">20MA</span> $221.74</td>
-            <td class="text-danger fw-bold">-0.86%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=COST" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   COST 🔍
-                </a>
-            </td>
-            <td>$1008.79</td>
-            <td><span class="badge bg-secondary">20MA</span> $1000.14</td>
-            <td class="text-success fw-bold">+0.86%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=CSL" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   CSL 🔍
-                </a>
-            </td>
-            <td>$360.39</td>
-            <td><span class="badge bg-secondary">20MA</span> $357.29</td>
-            <td class="text-success fw-bold">+0.87%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=AN" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   AN 🔍
-                </a>
-            </td>
-            <td>$205.97</td>
-            <td><span class="badge bg-secondary">20MA</span> $204.13</td>
-            <td class="text-success fw-bold">+0.90%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=VZ" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   VZ 🔍
-                </a>
-            </td>
-            <td>$47.22</td>
-            <td><span class="badge bg-secondary">20MA</span> $46.76</td>
-            <td class="text-success fw-bold">+0.97%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr>
-        <tr>
-            <td>
-                <a href="https://finviz.com/quote.ashx?t=XEL" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-warning fw-bold">
-                   XEL 🔍
-                </a>
-            </td>
-            <td>$79.39</td>
-            <td><span class="badge bg-secondary">20MA</span> $80.17</td>
-            <td class="text-danger fw-bold">-0.97%</td>
-            <td><span class="badge bg-light text-dark">Finviz 圖表分析</span></td>
-        </tr></tbody>
-                </table>
+    <body class="py-5"><div class="container">
+        <h2 class="text-center mb-4">🎯 均線回測標的 (含財報預警)</h2>
+        <div class="text-center mb-4">
+            <span class="badge bg-danger">紅色：7天內公佈財報</span>
+            <span class="badge bg-primary">藍色：正常觀察</span>
+        </div>
+        
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Ross Stores, Inc. (ROST) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-05-21
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> -0.03%</span>
+                    <span><b>目前股價:</b> $225.81</span>
+                </div>
+                <div id="tv_ROST" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "ROST", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_ROST", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
             </div>
         </div>
-    </body>
-    </html>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Aramark (ARMK) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-05-12
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> -0.06%</span>
+                    <span><b>目前股價:</b> $45.08</span>
+                </div>
+                <div id="tv_ARMK" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "ARMK", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_ARMK", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Omnicom Group Inc. (OMC) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-07-21
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> -0.06%</span>
+                    <span><b>目前股價:</b> $77.06</span>
+                </div>
+                <div id="tv_OMC" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "OMC", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_OMC", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Evergy, Inc. (EVRG) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-08-06
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> +0.06%</span>
+                    <span><b>目前股價:</b> $81.78</span>
+                </div>
+                <div id="tv_EVRG" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "EVRG", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_EVRG", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">CSG Systems International, Inc. (CSGS) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-08-05
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> +0.07%</span>
+                    <span><b>目前股價:</b> $80.38</span>
+                </div>
+                <div id="tv_CSGS" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "CSGS", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_CSGS", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">American States Water Company (AWR) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-08-05
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> +0.10%</span>
+                    <span><b>目前股價:</b> $77.2</span>
+                </div>
+                <div id="tv_AWR" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "AWR", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_AWR", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Canadian National Railway Compa (CNI) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-07-24
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> +0.23%</span>
+                    <span><b>目前股價:</b> $111.64</span>
+                </div>
+                <div id="tv_CNI" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "CNI", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_CNI", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Microsoft Corporation (MSFT) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-07-29
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> -0.25%</span>
+                    <span><b>目前股價:</b> $415.12</span>
+                </div>
+                <div id="tv_MSFT" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "MSFT", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_MSFT", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">The Cheesecake Factory Incorpor (CAKE) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-07-28
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> +0.26%</span>
+                    <span><b>目前股價:</b> $61.65</span>
+                </div>
+                <div id="tv_CAKE" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "CAKE", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_CAKE", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Chesapeake Utilities Corporatio (CPK) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-08-06
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> -0.30%</span>
+                    <span><b>目前股價:</b> $126.42</span>
+                </div>
+                <div id="tv_CPK" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "CPK", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_CPK", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">AMETEK, Inc. (AME) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-07-30
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> -0.33%</span>
+                    <span><b>目前股價:</b> $232.4</span>
+                </div>
+                <div id="tv_AME" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "AME", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_AME", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Visa Inc. (V) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-07-28
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>19MA 偏離:</b> +0.41%</span>
+                    <span><b>目前股價:</b> $318.79</span>
+                </div>
+                <div id="tv_V" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "V", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_V", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 19 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Artesian Resources Corporation (ARTNA) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-08-03
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> +0.42%</span>
+                    <span><b>目前股價:</b> $32.04</span>
+                </div>
+                <div id="tv_ARTNA" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "ARTNA", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_ARTNA", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Alliant Energy Corporation (LNT) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-04-30
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> -0.47%</span>
+                    <span><b>目前股價:</b> $71.76</span>
+                </div>
+                <div id="tv_LNT" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "LNT", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_LNT", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">BJ's Wholesale Club Holdings, I (BJ) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-05-21
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> -0.50%</span>
+                    <span><b>目前股價:</b> $92.97</span>
+                </div>
+                <div id="tv_BJ" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "BJ", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_BJ", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Flanigan's Enterprises, Inc. (BDL) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: N/A
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> -0.56%</span>
+                    <span><b>目前股價:</b> $30.53</span>
+                </div>
+                <div id="tv_BDL" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "BDL", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_BDL", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Moody's Corporation (MCO) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-07-23
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> -0.60%</span>
+                    <span><b>目前股價:</b> $451.32</span>
+                </div>
+                <div id="tv_MCO" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "MCO", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_MCO", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">MSCI Inc. (MSCI) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-07-21
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> +0.60%</span>
+                    <span><b>目前股價:</b> $585.42</span>
+                </div>
+                <div id="tv_MSCI" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "MSCI", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_MSCI", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Darden Restaurants, Inc. (DRI) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-03-19
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> -0.64%</span>
+                    <span><b>目前股價:</b> $196.23</span>
+                </div>
+                <div id="tv_DRI" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "DRI", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_DRI", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Intuit Inc. (INTU) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-05-20
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> +0.67%</span>
+                    <span><b>目前股價:</b> $396.31</span>
+                </div>
+                <div id="tv_INTU" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "INTU", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_INTU", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">IDACORP, Inc. (IDA) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-07-30
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> -0.71%</span>
+                    <span><b>目前股價:</b> $144.0</span>
+                </div>
+                <div id="tv_IDA" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "IDA", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_IDA", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Miller Industries, Inc. (MLR) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-08-05
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> +0.72%</span>
+                    <span><b>目前股價:</b> $48.07</span>
+                </div>
+                <div id="tv_MLR" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "MLR", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_MLR", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Toro Company (The) (TTC) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-06-04
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> +0.74%</span>
+                    <span><b>目前股價:</b> $95.5</span>
+                </div>
+                <div id="tv_TTC" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "TTC", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_TTC", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">AGCO Corporation (AGCO) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-07-30
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> -0.75%</span>
+                    <span><b>目前股價:</b> $117.34</span>
+                </div>
+                <div id="tv_AGCO" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "AGCO", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_AGCO", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">The Trade Desk, Inc. (TTD) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-08-06
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> -0.75%</span>
+                    <span><b>目前股價:</b> $23.08</span>
+                </div>
+                <div id="tv_TTD" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "TTD", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_TTD", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Charles River Laboratories Inte (CRL) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-08-05
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> +0.82%</span>
+                    <span><b>目前股價:</b> $177.62</span>
+                </div>
+                <div id="tv_CRL" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "CRL", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_CRL", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Curtiss-Wright Corporation (CW) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-08-05
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> +0.82%</span>
+                    <span><b>目前股價:</b> $729.2</span>
+                </div>
+                <div id="tv_CW" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "CW", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_CW", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Dover Corporation (DOV) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-07-23
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> -0.86%</span>
+                    <span><b>目前股價:</b> $219.83</span>
+                </div>
+                <div id="tv_DOV" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "DOV", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_DOV", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Costco Wholesale Corporation (COST) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-05-28
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> +0.86%</span>
+                    <span><b>目前股價:</b> $1008.79</span>
+                </div>
+                <div id="tv_COST" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "COST", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_COST", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Carlisle Companies Incorporated (CSL) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-04-23
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> +0.87%</span>
+                    <span><b>目前股價:</b> $360.39</span>
+                </div>
+                <div id="tv_CSL" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "CSL", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_CSL", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">AutoNation, Inc. (AN) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-07-31
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> +0.90%</span>
+                    <span><b>目前股價:</b> $205.97</span>
+                </div>
+                <div id="tv_AN" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "AN", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_AN", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Verizon Communications Inc. (VZ) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-07-21
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> +0.97%</span>
+                    <span><b>目前股價:</b> $47.22</span>
+                </div>
+                <div id="tv_VZ" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "VZ", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_VZ", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+        <div class="card mb-4 shadow border-0" style="">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <h5 class="mb-0">Xcel Energy Inc. (XEL) </h5>
+                <span class="badge bg-light text-dark">
+                    下次財報: 2026-07-30
+                </span>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><b>20MA 偏離:</b> -0.97%</span>
+                    <span><b>目前股價:</b> $79.39</span>
+                </div>
+                <div id="tv_XEL" style="height: 400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true, "symbol": "XEL", "interval": "D", "theme": "light", "style": "1", "locale": "zh_TW",
+                  "container_id": "tv_XEL", "hide_top_toolbar": true,
+                  "studies": [ { "id": "MASimple@tv-basicstudies", "inputs": { "length": 20 } } ]
+                });
+                </script>
+            </div>
+        </div>
+    </div></body></html>
