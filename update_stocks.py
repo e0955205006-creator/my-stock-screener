@@ -1,12 +1,12 @@
 import yfinance as yf
 import pandas as pd
 import datetime
+import time
 
 # --- 1. 參數與自定義區 ---
-SEARCH_RANGE = 0.01  # 離均線 1% 以內
+SEARCH_RANGE = 0.01  
 DEFAULT_MA = 20
 
-# 格式: "代號": (MA天數, 專屬搜尋範圍)
 CUSTOM_CONFIG = {
     "V": (19, 0.01),      
     "AAPL": (20, 0.01),   
@@ -48,6 +48,7 @@ def get_clean_name(ticker_obj, symbol):
         return symbol
 
 def main():
+    # 下載數據
     data = yf.download(TICKERS, period="100d", interval="1d", progress=False)['Close']
     passed = []
     today = datetime.datetime.now()
@@ -68,39 +69,41 @@ def main():
             if abs(diff_ratio) <= specific_range:
                 t_obj = yf.Ticker(ticker)
                 
-                # --- 強化版財報抓取邏輯 ---
+                # --- 強制獲取財報日期邏輯 ---
                 earnings_date = "N/A"
                 is_near_earnings = False
                 
+                # 方案 A: 透過 calendar 屬性 (最準確但易失敗)
                 try:
-                    # 優先嘗試 calendar
-                    cal = t_obj.calendar
-                    target_dt = None
-                    
-                    if cal is not None and not isinstance(cal, list) and 'Earnings Date' in cal:
+                    cal = t_obj.get_calendar()
+                    if cal and 'Earnings Date' in cal:
                         target_dt = cal['Earnings Date'][0]
-                    elif isinstance(cal, list) and len(cal) > 0: # 部分版本回傳 list
-                        target_dt = cal[0]
-
-                    # 如果 calendar 失敗，嘗試 earnings_dates (yfinance 新版建議)
-                    if target_dt is None:
-                        e_dates = t_obj.earnings_dates
-                        if e_dates is not None and not e_dates.empty:
-                            # 找出大於等於今天的日期
-                            future_dates = e_dates.index[e_dates.index.tz_localize(None).date >= today_date]
-                            if not future_dates.empty:
-                                target_dt = future_dates[-1] # 取最近的一個
-
-                    if target_dt is not None:
-                        # 統一轉為純日期
                         e_date = target_dt.replace(tzinfo=None).date()
                         earnings_date = e_date.strftime('%Y-%m-%d')
-                        
-                        delta = (e_date - today_date).days
-                        if 0 <= delta <= 7:
-                            is_near_earnings = True
-                except Exception as e:
-                    print(f"Error fetching earnings for {ticker}: {e}")
+                except:
+                    pass
+
+                # 方案 B: 如果 A 失敗，嘗試 earnings_dates 歷史表 (獲取未來的日期)
+                if earnings_date == "N/A":
+                    try:
+                        e_df = t_obj.get_earnings_dates()
+                        if e_df is not None and not e_df.empty:
+                            # 移除時區並過濾出今天以後的日期
+                            e_df.index = e_df.index.tz_localize(None)
+                            future_dates = e_df.index[e_df.index.date >= today_date]
+                            if not future_dates.empty:
+                                # 取最接近今天的一個
+                                e_date = future_dates.min().date()
+                                earnings_date = e_date.strftime('%Y-%m-%d')
+                    except:
+                        pass
+
+                # 判定預警 (只要日期不是 N/A 就計算天數)
+                if earnings_date != "N/A":
+                    e_date_obj = datetime.datetime.strptime(earnings_date, '%Y-%m-%d').date()
+                    delta = (e_date_obj - today_date).days
+                    if 0 <= delta <= 7:
+                        is_near_earnings = True
 
                 passed.append({
                     "Symbol": ticker,
@@ -112,15 +115,20 @@ def main():
                     "Earnings": earnings_date,
                     "Warning": is_near_earnings
                 })
-        except: continue
+                # 加入極短延遲避免 API 過載
+                time.sleep(0.1)
+                
+        except Exception as e:
+            print(f"處理 {ticker} 時發生錯誤: {e}")
+            continue
 
+    # 排序：從正到負
     passed.sort(key=lambda x: x['Diff_Val'], reverse=True)
     
     now = today.strftime("%Y-%m-%d %H:%M:%S")
     rows = ""
     for x in passed:
         badge_color = "bg-success" if x['Diff_Val'] >= 0 else "bg-danger"
-        # 如果有預警，強制讓 Header 變紅，背景變粉紅
         header_color = "bg-danger" if x['Warning'] else "bg-primary"
         bg_style = "background-color: #fff5f5;" if x['Warning'] else ""
         warning_tag = '<span class="badge bg-warning text-dark ms-2">⚠️ 近期財報</span>' if x['Warning'] else ""
