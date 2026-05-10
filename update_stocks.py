@@ -1,12 +1,19 @@
 import yfinance as yf
 import pandas as pd
 import datetime
+import time
+import requests
 
 # --- 1. 參數與自定義區 ---
 SEARCH_RANGE = 0.01  
 DEFAULT_MA = 20
 
-# 格式: "代號": (MA天數, 專屬搜尋範圍)
+# 持股紀錄區：代碼與買入備註 (會強制顯示並置頂)
+MY_PORTFOLIO = {
+    "ARMK": "2026-05-01 買入",
+    "V": "長期持有計畫",
+}
+
 CUSTOM_CONFIG = {
     "V": (19, 0.01),      
     "AAPL": (20, 0.01),   
@@ -39,71 +46,106 @@ TICKERS = [
 
 def get_clean_name(ticker_obj, symbol):
     try:
-        name = ticker_obj.info.get('shortName') or ticker_obj.info.get('longName') or symbol
+        info = ticker_obj.info
+        name = info.get('shortName') or info.get('longName') or symbol
         for suffix in [" Inc.", " Corp.", " Corporation", " Ltd.", " plc"]:
             name = name.replace(suffix, "")
         return name
     except:
         return symbol
 
+def fetch_earnings_date_safe(t_obj, today_date):
+    try:
+        cal = t_obj.get_calendar()
+        if cal and isinstance(cal, dict) and 'Earnings Date' in cal:
+            d_list = cal['Earnings Date']
+            if d_list and len(d_list) > 0:
+                return d_list[0].replace(tzinfo=None).date()
+        e_df = t_obj.get_earnings_dates()
+        if e_df is not None and not e_df.empty:
+            e_df.index = e_df.index.tz_localize(None)
+            future = e_df.index[e_df.index.date >= today_date]
+            if not future.empty:
+                return future.min().date()
+    except:
+        pass
+    return None
+
 def main():
-    data = yf.download(TICKERS, period="100d", interval="1d", progress=False)['Close']
+    session = requests.Session()
+    session.headers.update({
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    })
+
+    data = yf.download(TICKERS, period="150d", interval="1d", progress=False, session=session)['Close']
     passed = []
     today = datetime.datetime.now()
+    today_date = today.date()
     
     for ticker in TICKERS:
         try:
+            if ticker not in data.columns: continue
             col = data[ticker].dropna()
-            if col.empty: continue
+            if len(col) < 60: continue
             
             ma_days, specific_range = CUSTOM_CONFIG.get(ticker, (DEFAULT_MA, SEARCH_RANGE))
-            if len(col) < ma_days: continue
-            
             ma_val = col.rolling(ma_days).mean().iloc[-1]
             price = col.iloc[-1]
             diff_ratio = (price / ma_val) - 1
             
-            if abs(diff_ratio) <= specific_range:
-                t_obj = yf.Ticker(ticker)
+            # --- 持股檢查邏輯 ---
+            is_portfolio = ticker in MY_PORTFOLIO
+            
+            # 只要是持股，或者符合 1% 均線條件
+            if is_portfolio or abs(diff_ratio) <= specific_range:
+                t_obj = yf.Ticker(ticker, session=session)
+                e_date = fetch_earnings_date_safe(t_obj, today_date)
                 
-                earnings_date = "N/A"
-                is_near_earnings = False
-                try:
-                    cal = t_obj.calendar
-                    if 'Earnings Date' in cal and cal['Earnings Date']:
-                        e_date = cal['Earnings Date'][0]
-                        earnings_date = e_date.strftime('%Y-%m-%d')
-                        if 0 <= (e_date.replace(tzinfo=None) - today).days <= 7:
-                            is_near_earnings = True
-                except: pass
+                earnings_str = "N/A"
+                is_near = False
+                if e_date:
+                    earnings_str = e_date.strftime('%Y-%m-%d')
+                    if 0 <= (e_date - today_date).days <= 7:
+                        is_near = True
 
                 passed.append({
                     "Symbol": ticker,
                     "Name": get_clean_name(t_obj, ticker),
                     "Price": round(float(price), 2),
                     "MA_Days": ma_days,
-                    "Diff_Val": float(diff_ratio), # 核心排序數值
+                    "Diff_Val": float(diff_ratio), 
                     "Diff_Str": f"{diff_ratio*100:+.2f}%",
-                    "Earnings": earnings_date,
-                    "Warning": is_near_earnings
+                    "Earnings": earnings_str,
+                    "Warning": is_near,
+                    "Is_Portfolio": is_portfolio,
+                    "Note": MY_PORTFOLIO.get(ticker, "")
                 })
-        except: continue
+                time.sleep(0.3)
+        except:
+            continue
 
-    # --- 關鍵修正：確保排序針對數值進行降冪排列 ---
-    # reverse=True 代表從大到小 (從 +0.99 排到 -0.99)
-    passed.sort(key=lambda x: x['Diff_Val'], reverse=True)
+    # 排序：持股置頂，其餘按偏離度排
+    passed.sort(key=lambda x: (not x['Is_Portfolio'], x['Diff_Val']), reverse=False)
     
-    now = today.strftime("%Y-%m-%d %H:%M:%S")
+    now_str = today.strftime("%Y-%m-%d %H:%M:%S")
     rows = ""
     for x in passed:
+        # 標題區樣式判斷
+        if x['Is_Portfolio']:
+            header_color = "bg-dark"
+            portfolio_tag = f'<span class="badge bg-warning text-dark ms-2">💰 持有中: {x["Note"]}</span>'
+        else:
+            header_color = "bg-danger" if x['Warning'] else "bg-primary"
+            portfolio_tag = ""
+            
         badge_color = "bg-success" if x['Diff_Val'] >= 0 else "bg-danger"
-        bg_style = "background-color: #fff5f5;" if x['Warning'] else ""
-        header_color = "bg-danger" if x['Warning'] else "bg-primary"
+        bg_style = "background-color: #fff5f5;" if x['Warning'] and not x['Is_Portfolio'] else ""
+        warning_tag = '<span class="badge bg-warning text-dark ms-2">⚠️ 近期財報</span>' if x['Warning'] else ""
         
         rows += f"""
         <div class="card mb-4 shadow border-0" style="{bg_style}">
             <div class="card-header d-flex justify-content-between align-items-center {header_color} text-white">
-                <h5 class="mb-0">{x['Name']} ({x['Symbol']})</h5>
+                <h5 class="mb-0">{x['Name']} ({x['Symbol']}){portfolio_tag}{warning_tag}</h5>
                 <span class="badge bg-light text-dark">下次財報: {x['Earnings']}</span>
             </div>
             <div class="card-body p-3">
@@ -140,9 +182,9 @@ def main():
     <body class="py-5">
         <div class="container">
             <h2 class="text-center mb-2">🎯 精選均線回測標的</h2>
-            <p class="text-center text-muted small">依偏離度排序 (+0.99% → -0.99%)<br>更新時間: {now} (UTC)</p>
+            <p class="text-center text-muted small">持股置頂，其餘依偏離度排序<br>更新時間: {now_str} (UTC)</p>
             <hr>
-            {rows if passed else '<div class="alert alert-info text-center">目前無標的在均線 1% 範圍內</div>'}
+            {rows if passed else '<div class="alert alert-info text-center">目前無標的在篩選範圍內</div>'}
         </div>
     </body>
     </html>"""
