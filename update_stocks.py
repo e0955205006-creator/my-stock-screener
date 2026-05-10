@@ -3,15 +3,23 @@ import pandas as pd
 import datetime
 import time
 import requests
+import os
 
 # --- 1. 參數與自定義區 ---
 SEARCH_RANGE = 0.01  
 DEFAULT_MA = 20
 
-# 持股紀錄區 (代碼請務必大寫)
+# 持股紀錄區 (代碼務必大寫)
 MY_PORTFOLIO = {
     "ARMK": "2026-05-01 買入",
     "V": "長期持有計畫",
+}
+
+CUSTOM_CONFIG = {
+    "V": (19, 0.01),      
+    "AAPL": (20, 0.01),   
+    "NVDA": (10, 0.015),  
+    "LULU": (60, 0.01),
 }
 
 TICKERS = [
@@ -37,40 +45,27 @@ TICKERS = [
     "BBSI", "BAH", "AVY", "AWI", "INTC", "ATR"
 ]
 
-CUSTOM_CONFIG = {
-    "V": (19, 0.01),      
-    "AAPL": (20, 0.01),   
-    "NVDA": (10, 0.015),  
-    "LULU": (60, 0.01),
-}
-
 def fetch_earnings_date_safe(t_obj):
-    """ 極度魯棒的日期抓取 """
     try:
         cal = t_obj.get_calendar()
         if cal and 'Earnings Date' in cal:
-            # 取得第一個日期並強制轉為 naive date
             return cal['Earnings Date'][0].astimezone(None).replace(tzinfo=None).date()
-        
         e_df = t_obj.get_earnings_dates()
         if e_df is not None and not e_df.empty:
-            # 取出未來日期中最接近的一個
-            future = e_df.index[e_df.index.tz_localize(None).date >= datetime.date.today()]
+            today_date = datetime.date.today()
+            future = e_df.index[e_df.index.tz_localize(None).date >= today_date]
             if not future.empty:
                 return future.min().to_pydatetime().date()
-    except:
-        pass
+    except: pass
     return None
 
 def main():
     session = requests.Session()
     session.headers.update({'User-Agent': 'Mozilla/5.0'})
     
-    # 確保買入名單大寫對齊
     my_portfolio_upper = {k.upper(): v for k, v in MY_PORTFOLIO.items()}
-    
-    # 下載數據
     data = yf.download(TICKERS, period="150d", interval="1d", progress=False, session=session)['Close']
+    
     passed = []
     today = datetime.date.today()
     
@@ -85,7 +80,6 @@ def main():
             price = col.iloc[-1]
             diff_ratio = (price / ma_val) - 1
             
-            # --- 判斷邏輯 ---
             is_portfolio = ticker.upper() in my_portfolio_upper
             
             if is_portfolio or abs(diff_ratio) <= specific_range:
@@ -94,10 +88,8 @@ def main():
                 
                 earnings_str = "N/A"
                 is_near = False
-                
                 if e_date:
                     earnings_str = e_date.strftime('%Y-%m-%d')
-                    # 只要距離 7 天內，或甚至是今天，都算預警
                     delta = (e_date - today).days
                     if 0 <= delta <= 7:
                         is_near = True
@@ -105,7 +97,7 @@ def main():
                 passed.append({
                     "Symbol": ticker,
                     "Price": round(float(price), 2),
-                    "Diff_Val": float(diff_ratio), 
+                    "Diff_Val": float(diff_ratio),
                     "Diff_Str": f"{diff_ratio*100:+.2f}%",
                     "Earnings": earnings_str,
                     "Warning": is_near,
@@ -115,13 +107,12 @@ def main():
                 })
         except: continue
 
-    # --- 關鍵排序：1. 持股優先 (0 為優先) 2. 財報預警優先 (0 為優先) 3. 偏離度 ---
-    # 因為 Python 排序 False(0) 在 True(1) 前面，我們用 bool 取反來達成目的
+    # 排序：持股(True->False) -> 財報預警(True->False) -> 偏離度由大到小
     passed.sort(key=lambda x: (not x['Is_Portfolio'], not x['Warning'], -x['Diff_Val']))
     
     rows = ""
     for x in passed:
-        # 決定顏色 (持股黑標題，財報週紅標題，其餘藍)
+        # 決定顏色邏輯
         if x['Is_Portfolio']:
             header_color = "bg-dark"
             tag = f'<span class="badge bg-warning text-dark ms-2">💰 持有: {x["Note"]}</span>'
@@ -134,9 +125,10 @@ def main():
 
         warn_badge = '<span class="badge bg-warning text-dark ms-2">⚠️ 近期財報</span>' if x['Warning'] else ""
         badge_color = "bg-success" if x['Diff_Val'] >= 0 else "bg-danger"
+        bg_style = "border: 2px solid #dc3545;" if x['Warning'] else ""
 
         rows += f"""
-        <div class="card mb-4 shadow border-0" style="{'border: 2px solid #dc3545;' if x['Warning'] else ''}">
+        <div class="card mb-4 shadow border-0" style="{bg_style}">
             <div class="card-header d-flex justify-content-between align-items-center {header_color} text-white">
                 <h5 class="mb-0">{x['Symbol']} {tag} {warn_badge}</h5>
                 <span class="badge bg-light text-dark">下次財報: {x['Earnings']}</span>
@@ -158,9 +150,31 @@ def main():
             </div>
         </div>"""
 
-    # 生成 HTML (略，同之前邏輯)
-    # ...
-    # 此處請接續原本將 rows 填入 html_content 並寫入 index.html 的代碼
+    now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    html_content = f"""
+    <!DOCTYPE html>
+    <html lang="zh-TW">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>均線回測報告</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <style>body {{ background-color: #f4f7f6; }} .container {{ max-width: 850px; }}</style>
+    </head>
+    <body class="py-5"><div class="container">
+        <h2 class="text-center mb-2">🎯 持股追蹤與均線篩選</h2>
+        <p class="text-center text-muted small">更新時間: {now_str} (UTC)</p>
+        <div class="d-flex justify-content-center mb-4 gap-2">
+            <span class="badge bg-dark">持有中</span>
+            <span class="badge bg-danger">近期財報</span>
+            <span class="badge bg-primary">均線觀察</span>
+        </div>
+        <hr>
+        {rows if passed else '<div class="alert alert-info text-center">目前無符合條件標的</div>'}
+    </div></body></html>"""
+    
+    with open("index.html", "w", encoding="utf-8") as f:
+        f.write(html_content)
 
 if __name__ == "__main__":
     main()
