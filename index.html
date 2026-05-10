@@ -1,10 +1,13 @@
 
     <!DOCTYPE html>
     <html lang="zh-TW">
-    <head><meta charset="UTF-8"><title>美股監控</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"></head>
+    <head><meta charset="UTF-8"><title>監控報告</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"></head>
     <body class="bg-light py-5"><div class="container" style="max-width: 800px;">
-        <h2 class="text-center mb-4">📈 持股追蹤與均線篩選</h2>
-        <p class="text-center text-muted small">更新時間 (UTC): 2026-05-10 16:25</p>
+        <h2 class="text-center mb-4">🎯 持股與均線監控</h2>
+        <p class="text-center text-muted small">更新時間 (台北): 2026-05-11 00:29</p>
+        <div class="d-flex justify-content-center mb-4 gap-2">
+            <span class="badge bg-dark">已持股</span> <span class="badge bg-danger">近期財報</span> <span class="badge bg-primary">均線標的</span>
+        </div>
         <hr>
         <div class="card mb-4 shadow-sm" style="">
             <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white">
@@ -12,7 +15,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> +0.54% | <b>價格:</b> $318.79</p>
+                <p><b>20MA 偏離:</b> <span class="text-success">+0.54%</span> | <b>價格:</b> $318.79</p>
                 <div id="tv_V" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -30,7 +33,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> -0.06% | <b>價格:</b> $45.08</p>
+                <p><b>20MA 偏離:</b> <span class="text-danger">-0.06%</span> | <b>價格:</b> $45.08</p>
                 <div id="tv_ARMK" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -48,7 +51,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> +0.97% | <b>價格:</b> $47.22</p>
+                <p><b>20MA 偏離:</b> <span class="text-success">+0.97%</span> | <b>價格:</b> $47.22</p>
                 <div id="tv_VZ" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -66,7 +69,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> +0.90% | <b>價格:</b> $205.97</p>
+                <p><b>20MA 偏離:</b> <span class="text-success">+0.90%</span> | <b>價格:</b> $205.97</p>
                 <div id="tv_AN" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -84,7 +87,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> +0.87% | <b>價格:</b> $360.39</p>
+                <p><b>20MA 偏離:</b> <span class="text-success">+0.87%</span> | <b>價格:</b> $360.39</p>
                 <div id="tv_CSL" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -102,7 +105,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> +0.86% | <b>價格:</b> $1008.79</p>
+                <p><b>20MA 偏離:</b> <span class="text-success">+0.86%</span> | <b>價格:</b> $1008.79</p>
                 <div id="tv_COST" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -120,7 +123,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> +0.82% | <b>價格:</b> $729.2</p>
+                <p><b>20MA 偏離:</b> <span class="text-success">+0.82%</span> | <b>價格:</b> $729.2</p>
                 <div id="tv_CW" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -138,7 +141,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> +0.82% | <b>價格:</b> $177.62</p>
+                <p><b>20MA 偏離:</b> <span class="text-success">+0.82%</span> | <b>價格:</b> $177.62</p>
                 <div id="tv_CRL" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -156,7 +159,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> +0.74% | <b>價格:</b> $95.5</p>
+                <p><b>20MA 偏離:</b> <span class="text-success">+0.74%</span> | <b>價格:</b> $95.5</p>
                 <div id="tv_TTC" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -174,7 +177,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> +0.72% | <b>價格:</b> $48.07</p>
+                <p><b>20MA 偏離:</b> <span class="text-success">+0.72%</span> | <b>價格:</b> $48.07</p>
                 <div id="tv_MLR" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -192,7 +195,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> +0.67% | <b>價格:</b> $396.31</p>
+                <p><b>20MA 偏離:</b> <span class="text-success">+0.67%</span> | <b>價格:</b> $396.31</p>
                 <div id="tv_INTU" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -210,7 +213,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> +0.60% | <b>價格:</b> $585.42</p>
+                <p><b>20MA 偏離:</b> <span class="text-success">+0.60%</span> | <b>價格:</b> $585.42</p>
                 <div id="tv_MSCI" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -228,7 +231,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> +0.42% | <b>價格:</b> $32.04</p>
+                <p><b>20MA 偏離:</b> <span class="text-success">+0.42%</span> | <b>價格:</b> $32.04</p>
                 <div id="tv_ARTNA" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -246,7 +249,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> +0.26% | <b>價格:</b> $61.65</p>
+                <p><b>20MA 偏離:</b> <span class="text-success">+0.26%</span> | <b>價格:</b> $61.65</p>
                 <div id="tv_CAKE" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -264,7 +267,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> +0.23% | <b>價格:</b> $111.64</p>
+                <p><b>20MA 偏離:</b> <span class="text-success">+0.23%</span> | <b>價格:</b> $111.64</p>
                 <div id="tv_CNI" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -282,7 +285,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> +0.10% | <b>價格:</b> $77.2</p>
+                <p><b>20MA 偏離:</b> <span class="text-success">+0.10%</span> | <b>價格:</b> $77.2</p>
                 <div id="tv_AWR" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -300,7 +303,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> +0.07% | <b>價格:</b> $80.38</p>
+                <p><b>20MA 偏離:</b> <span class="text-success">+0.07%</span> | <b>價格:</b> $80.38</p>
                 <div id="tv_CSGS" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -318,7 +321,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> +0.06% | <b>價格:</b> $81.78</p>
+                <p><b>20MA 偏離:</b> <span class="text-success">+0.06%</span> | <b>價格:</b> $81.78</p>
                 <div id="tv_EVRG" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -336,7 +339,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> -0.03% | <b>價格:</b> $225.81</p>
+                <p><b>20MA 偏離:</b> <span class="text-danger">-0.03%</span> | <b>價格:</b> $225.81</p>
                 <div id="tv_ROST" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -354,7 +357,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> -0.06% | <b>價格:</b> $77.06</p>
+                <p><b>20MA 偏離:</b> <span class="text-danger">-0.06%</span> | <b>價格:</b> $77.06</p>
                 <div id="tv_OMC" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -372,7 +375,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> -0.25% | <b>價格:</b> $415.12</p>
+                <p><b>20MA 偏離:</b> <span class="text-danger">-0.25%</span> | <b>價格:</b> $415.12</p>
                 <div id="tv_MSFT" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -390,7 +393,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> -0.30% | <b>價格:</b> $126.42</p>
+                <p><b>20MA 偏離:</b> <span class="text-danger">-0.30%</span> | <b>價格:</b> $126.42</p>
                 <div id="tv_CPK" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -408,7 +411,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> -0.33% | <b>價格:</b> $232.4</p>
+                <p><b>20MA 偏離:</b> <span class="text-danger">-0.33%</span> | <b>價格:</b> $232.4</p>
                 <div id="tv_AME" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -426,7 +429,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> -0.47% | <b>價格:</b> $71.76</p>
+                <p><b>20MA 偏離:</b> <span class="text-danger">-0.47%</span> | <b>價格:</b> $71.76</p>
                 <div id="tv_LNT" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -444,7 +447,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> -0.50% | <b>價格:</b> $92.97</p>
+                <p><b>20MA 偏離:</b> <span class="text-danger">-0.50%</span> | <b>價格:</b> $92.97</p>
                 <div id="tv_BJ" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -462,7 +465,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> -0.56% | <b>價格:</b> $30.53</p>
+                <p><b>20MA 偏離:</b> <span class="text-danger">-0.56%</span> | <b>價格:</b> $30.53</p>
                 <div id="tv_BDL" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -480,7 +483,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> -0.60% | <b>價格:</b> $451.32</p>
+                <p><b>20MA 偏離:</b> <span class="text-danger">-0.60%</span> | <b>價格:</b> $451.32</p>
                 <div id="tv_MCO" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -498,7 +501,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> -0.64% | <b>價格:</b> $196.23</p>
+                <p><b>20MA 偏離:</b> <span class="text-danger">-0.64%</span> | <b>價格:</b> $196.23</p>
                 <div id="tv_DRI" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -516,7 +519,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> -0.71% | <b>價格:</b> $144.0</p>
+                <p><b>20MA 偏離:</b> <span class="text-danger">-0.71%</span> | <b>價格:</b> $144.0</p>
                 <div id="tv_IDA" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -534,7 +537,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> -0.75% | <b>價格:</b> $117.34</p>
+                <p><b>20MA 偏離:</b> <span class="text-danger">-0.75%</span> | <b>價格:</b> $117.34</p>
                 <div id="tv_AGCO" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -552,7 +555,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> -0.75% | <b>價格:</b> $23.08</p>
+                <p><b>20MA 偏離:</b> <span class="text-danger">-0.75%</span> | <b>價格:</b> $23.08</p>
                 <div id="tv_TTD" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -570,7 +573,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> -0.86% | <b>價格:</b> $219.83</p>
+                <p><b>20MA 偏離:</b> <span class="text-danger">-0.86%</span> | <b>價格:</b> $219.83</p>
                 <div id="tv_DOV" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -588,7 +591,7 @@
                 <span class="badge bg-light text-dark">財報日: N/A</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> -0.97% | <b>價格:</b> $79.39</p>
+                <p><b>20MA 偏離:</b> <span class="text-danger">-0.97%</span> | <b>價格:</b> $79.39</p>
                 <div id="tv_XEL" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
