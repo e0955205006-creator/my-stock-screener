@@ -3,49 +3,45 @@ import pandas as pd
 import datetime
 import os
 
-# --- 1. 配置區 ---
+# --- 配置區 ---
 SEARCH_RANGE = 0.01
 DEFAULT_MA = 20
 
-# 持股紀錄區 (代碼請務必大寫)
+# 持股紀錄區
 MY_PORTFOLIO = {
     "ARMK": "2026-05-01 買入",
     "V": "長期持有計畫",
 }
 
-# 這是你要掃描的 190 檔名單 (簡化顯示)
 TICKERS = ["INTU", "GOOGL", "PLUS", "AXP", "AIT", "NVO", "ACN", "AGM", "BKNG", "GAJG", "ASML", "AME", "AAPL", "IBP", "PAYC", "URI", "GIB", "AEE", "XEL", "WEC", "LNT", "CTAS", "CPK", "CHE", "HD", "UNH", "ADP", "APD", "ATO", "COST", "MA", "V", "CW", "GD", "DPZ", "DRI", "ECL", "EME", "FIX", "GRMN", "HEI", "ICFI", "IDA", "IEX", "ITW", "JKHY", "MZTI", "II", "LOW", "MCD", "MCO", "MLM", "MSS", "MSCI", "HCA", "DKS", "ODFL", "OMC", "PKG", "RACE", "RMD", "ROP", "ROST", "RSG", "SHW", "SNA", "SNX", "SSD", "TMQ", "TSCO", "TTC", "TXRH", "WDFC", "WSO", "ZTS", "UNP", "MLR", "A_SN", "AYI", "SAIC", "TJX", "MSFT", "ETN", "CMG", "FTNT", "TYL", "CPAY", "ASR", "ANET", "MIDD", "LOPE", "ADUS", "CRL", "NFLX", "SAIA", "MEDP", "RBC", "MTD", "FFIV", "FIVE", "EW", "BURL", "ULTA", "SAM", "ISRG", "COO", "AZO", "BJ", "VEEV", "ICLR", "ADBE", "FICO", "IDXX", "QLYS", "EEFT", "TREX", "SNPS", "TTD", "CPRT", "DECK", "JNJ", "UNF", "AN", "ALGN", "HON", "LULU", "PH", "PWR", "CSL", "EVRG", "CP", "CHD", "FBIN", "AAP", "CSGS", "ED", "DTE", "CMS", "CHKP", "CAJPY", "AWK", "AWR", "ARTNA", "AGCO", "AEP", "ADM", "ADI", "ACNB", "AAON", "VZ", "MDT", "GIII", "EHC", "DOV", "MMM", "CNI", "APH", "AOS", "AMCX", "ALLE", "ALG", "AKAM", "AEQ", "BR", "CASY", "ARMK", "CSCO", "CL", "COLM", "BFAM", "BDL", "APTV", "AMAT", "CNXN", "CMI", "CMCSA", "CLX", "CHH", "CGNX", "CDW", "CDNS", "CCI", "CAKE", "CAE", "CACI", "BWA", "BOOT", "BDX", "BCPC", "BCE", "BBSI", "BAH", "AVY", "AWI", "INTC", "ATR"]
 
 def main():
-    # 下載數據
-    raw_data = yf.download(TICKERS, period="100d", interval="1d", progress=False)
-    # 處理 yfinance 多層索引問題
-    if isinstance(raw_data.columns, pd.MultiIndex):
-        close_data = raw_data['Close']
-    else:
-        close_data = raw_data
-
-    passed = []
     today = datetime.date.today()
-    my_portfolio_keys = [k.upper() for k in MY_PORTFOLIO.keys()]
+    # 1. 確保下載時使用 group_by='ticker'，這樣數據結構最穩定
+    print("正在下載數據...")
+    df_all = yf.download(TICKERS, period="100d", interval="1d", group_by='ticker', progress=False)
+    
+    passed = []
+    portfolio_upper = {k.upper(): v for k, v in MY_PORTFOLIO.items()}
 
     for ticker in TICKERS:
         try:
-            if ticker not in close_data.columns: continue
-            series = close_data[ticker].dropna()
-            if series.empty: continue
-
-            price = series.iloc[-1]
-            ma_val = series.rolling(DEFAULT_MA).mean().iloc[-1]
+            # 2. 安全取得該標的的收盤價
+            if ticker not in df_all.columns.levels[0]: continue
+            df_stock = df_all[ticker].dropna()
+            if df_stock.empty: continue
+            
+            close_series = df_stock['Close']
+            price = close_series.iloc[-1]
+            ma_val = close_series.rolling(DEFAULT_MA).mean().iloc[-1]
             diff_ratio = (price / ma_val) - 1
             
-            is_portfolio = ticker.upper() in my_portfolio_keys
+            is_portfolio = ticker.upper() in portfolio_upper
 
-            # 篩選條件：持有中 OR 進入 1% 範圍
+            # 3. 判斷邏輯：是持股 OR 符合偏離度
             if is_portfolio or abs(diff_ratio) <= SEARCH_RANGE:
+                # 抓取財報日
                 t_obj = yf.Ticker(ticker)
-                
-                # 財報抓取 (加入多層 Try 確保不崩潰)
                 e_str = "N/A"
                 is_near = False
                 try:
@@ -55,8 +51,7 @@ def main():
                         e_str = e_dt.strftime('%Y-%m-%d')
                         if 0 <= (e_dt - today).days <= 7:
                             is_near = True
-                except:
-                    pass
+                except: pass
 
                 passed.append({
                     "Symbol": ticker,
@@ -66,31 +61,31 @@ def main():
                     "Earnings": e_str,
                     "Warning": is_near,
                     "Is_Portfolio": is_portfolio,
-                    "Note": MY_PORTFOLIO.get(ticker, "")
+                    "Note": portfolio_upper.get(ticker.upper(), "")
                 })
-        except:
+        except Exception as e:
+            print(f"處理 {ticker} 時出錯: {e}")
             continue
 
-    # --- 關鍵排序：持股置頂(0) > 非持股(1)，接著按偏離度降序 ---
+    # 4. 排序：持股(0) > 非持股(1)
     passed.sort(key=lambda x: (0 if x['Is_Portfolio'] else 1, -x['Diff_Val']))
 
-    # 生成 HTML
+    # 5. 生成 HTML
     rows_html = ""
     for x in passed:
-        # 樣式決定
-        header_color = "bg-dark" if x['Is_Portfolio'] else ("bg-danger" if x['Warning'] else "bg-primary")
-        card_border = "border: 3px solid #dc3545;" if x['Warning'] else ""
-        p_tag = f'<span class="badge bg-warning text-dark ms-2">💰 持有: {x["Note"]}</span>' if x['Is_Portfolio'] else ""
-        w_tag = '<span class="badge bg-warning text-dark ms-2">⚠️ 近期財報</span>' if x['Warning'] else ""
+        header_cls = "bg-dark" if x['Is_Portfolio'] else ("bg-danger" if x['Warning'] else "bg-primary")
+        border_style = "border: 3px solid #dc3545;" if x['Warning'] else ""
+        badge_p = f'<span class="badge bg-warning text-dark ms-2">💰 持有: {x["Note"]}</span>' if x['Is_Portfolio'] else ""
+        badge_w = '<span class="badge bg-warning text-dark ms-2">⚠️ 近期財報</span>' if x['Warning'] else ""
 
         rows_html += f"""
-        <div class="card mb-4 shadow-sm" style="{card_border}">
-            <div class="card-header d-flex justify-content-between align-items-center {header_color} text-white">
-                <h5 class="mb-0">{x['Symbol']} {p_tag} {w_tag}</h5>
+        <div class="card mb-4 shadow-sm" style="{border_style}">
+            <div class="card-header d-flex justify-content-between align-items-center {header_cls} text-white">
+                <h5 class="mb-0">{x['Symbol']} {badge_p} {badge_w}</h5>
                 <span class="badge bg-light text-dark">財報日: {x['Earnings']}</span>
             </div>
             <div class="card-body">
-                <p class="mb-2"><b>20MA 偏離:</b> {x['Diff_Str']} | <b>價格:</b> ${x['Price']}</p>
+                <p><b>20MA 偏離:</b> <span class="{"text-danger" if x['Diff_Val'] < 0 else "text-success"}">{x['Diff_Str']}</span> | <b>價格:</b> ${x['Price']}</p>
                 <div id="tv_{x['Symbol']}" style="height: 400px;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
@@ -103,15 +98,18 @@ def main():
             </div>
         </div>"""
 
-    now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    now_str = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M")
     html_final = f"""
     <!DOCTYPE html>
     <html lang="zh-TW">
-    <head><meta charset="UTF-8"><title>美股監控</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"></head>
+    <head><meta charset="UTF-8"><title>監控報告</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"></head>
     <body class="bg-light py-5"><div class="container" style="max-width: 800px;">
-        <h2 class="text-center mb-4">📈 持股追蹤與均線篩選</h2>
-        <p class="text-center text-muted small">更新時間 (UTC): {now_str}</p>
-        <hr>{rows_html if passed else '<p class="text-center">查無符合條件標的</p>'}
+        <h2 class="text-center mb-4">🎯 持股與均線監控</h2>
+        <p class="text-center text-muted small">更新時間 (台北): {now_str}</p>
+        <div class="d-flex justify-content-center mb-4 gap-2">
+            <span class="badge bg-dark">已持股</span> <span class="badge bg-danger">近期財報</span> <span class="badge bg-primary">均線標的</span>
+        </div>
+        <hr>{rows_html if passed else '<div class="alert alert-warning text-center">暫無符合條件標的，請檢查數據源。</div>'}
     </div></body></html>"""
 
     with open("index.html", "w", encoding="utf-8") as f:
