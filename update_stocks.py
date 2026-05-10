@@ -2,6 +2,7 @@ import yfinance as yf
 import pandas as pd
 import datetime
 import requests
+import os
 
 # =================================================================
 # 1. 全局配置區
@@ -9,15 +10,18 @@ import requests
 DEFAULT_MA = 20
 SEARCH_RANGE = 0.01
 
+# 持股紀錄區 (代碼請大寫)
 MY_PORTFOLIO = {
     "ARMK": "2026-05-01 買入",
     "V": "長期持有計畫",
 }
 
+# 財報日修正
 MANUAL_EARNINGS = {
     "ARMK": "2026-05-12",
 }
 
+# 特殊均線設定
 CUSTOM_CONFIG = {
     "V": (19, 0.01),
     "AAPL": (20, 0.01),
@@ -27,7 +31,7 @@ CUSTOM_CONFIG = {
 TICKERS = ["INTU", "GOOGL", "PLUS", "AXP", "AIT", "NVO", "ACN", "AGM", "BKNG", "GAJG", "ASML", "AME", "AAPL", "IBP", "PAYC", "URI", "GIB", "AEE", "XEL", "WEC", "LNT", "CTAS", "CPK", "CHE", "HD", "UNH", "ADP", "APD", "ATO", "COST", "MA", "V", "CW", "GD", "DPZ", "DRI", "ECL", "EME", "FIX", "GRMN", "HEI", "ICFI", "IDA", "IEX", "ITW", "JKHY", "MZTI", "II", "LOW", "MCD", "MCO", "MLM", "MSS", "MSCI", "HCA", "DKS", "ODFL", "OMC", "PKG", "RACE", "RMD", "ROP", "ROST", "RSG", "SHW", "SNA", "SNX", "SSD", "TMQ", "TSCO", "TTC", "TXRH", "WDFC", "WSO", "ZTS", "UNP", "MLR", "A_SN", "AYI", "SAIC", "TJX", "MSFT", "ETN", "CMG", "FTNT", "TYL", "CPAY", "ASR", "ANET", "MIDD", "LOPE", "ADUS", "CRL", "NFLX", "SAIA", "MEDP", "RBC", "MTD", "FFIV", "FIVE", "EW", "BURL", "ULTA", "SAM", "ISRG", "COO", "AZO", "BJ", "VEEV", "ICLR", "ADBE", "FICO", "IDXX", "QLYS", "EEFT", "TREX", "SNPS", "TTD", "CPRT", "DECK", "JNJ", "UNF", "AN", "ALGN", "HON", "LULU", "PH", "PWR", "CSL", "EVRG", "CP", "CHD", "FBIN", "AAP", "CSGS", "ED", "DTE", "CMS", "CHKP", "CAJPY", "AWK", "AWR", "ARTNA", "AGCO", "AEP", "ADM", "ADI", "ACNB", "AAON", "VZ", "MDT", "GIII", "EHC", "DOV", "MMM", "CNI", "APH", "AOS", "AMCX", "ALLE", "ALG", "AKAM", "AEQ", "BR", "CASY", "ARMK", "CSCO", "CL", "COLM", "BFAM", "BDL", "APTV", "AMAT", "CNXN", "CMI", "CMCSA", "CLX", "CHH", "CGNX", "CDW", "CDNS", "CCI", "CAKE", "CAE", "CACI", "BWA", "BOOT", "BDX", "BCPC", "BCE", "BBSI", "BAH", "AVY", "AWI", "INTC", "ATR"]
 
 # =================================================================
-# 2. 核心程式邏輯
+# 2. 核心邏輯
 # =================================================================
 
 def main():
@@ -35,41 +39,47 @@ def main():
     session = requests.Session()
     session.headers.update({'User-Agent': 'Mozilla/5.0'})
     
-    # 確保買入名單大寫
     port_upper = {k.upper(): v for k, v in MY_PORTFOLIO.items()}
     conf_upper = {k.upper(): v for k, v in CUSTOM_CONFIG.items()}
 
-    # 下載數據，使用更強健的提取方式
-    print("正在下載股價數據...")
-    raw_df = yf.download(TICKERS, period="150d", interval="1d", group_by='ticker', progress=False, session=session)
-    
+    print("正在下載所有股票數據...")
+    # 強制使用 group_by='ticker' 獲取穩定結構
+    try:
+        raw_df = yf.download(TICKERS, period="150d", interval="1d", group_by='ticker', progress=False, session=session)
+    except Exception as e:
+        print(f"下載失敗: {e}")
+        return
+
     passed = []
 
     for ticker in TICKERS:
         try:
             t_up = ticker.upper()
             
-            # 安全檢查標的是否在下載結果中
-            if t_up not in raw_df.columns.levels[0] if isinstance(raw_df.columns, pd.MultiIndex) else [t_up]:
-                # 如果不是 MultiIndex，可能是只有單一股票或格式變動
-                try: df_stock = raw_df[t_up].dropna()
-                except: continue
-            else:
+            # 兼容不同版本的 yfinance 索引格式
+            if t_up in raw_df.columns:
                 df_stock = raw_df[t_up].dropna()
+            elif isinstance(raw_df.columns, pd.MultiIndex) and t_up in raw_df.columns.levels[0]:
+                df_stock = raw_df[t_up].dropna()
+            else:
+                continue
                 
-            if df_stock.empty: continue
+            if df_stock.empty or 'Close' not in df_stock.columns:
+                continue
             
-            # 設定讀取
+            # 獲取 MA 設定
             ma_days, spec_range = conf_upper.get(t_up, (DEFAULT_MA, SEARCH_RANGE))
             
-            price = df_stock['Close'].iloc[-1]
+            # 計算數據
+            close_price = df_stock['Close'].iloc[-1]
             ma_val = df_stock['Close'].rolling(ma_days).mean().iloc[-1]
-            diff_ratio = (price / ma_val) - 1
+            diff_ratio = (close_price / ma_val) - 1
             
             is_hold = t_up in port_upper
 
+            # 判定是否顯示
             if is_hold or abs(diff_ratio) <= spec_range:
-                # 財報抓取
+                # 財報日處理
                 e_str = MANUAL_EARNINGS.get(t_up, "N/A")
                 is_near = False
                 
@@ -80,16 +90,20 @@ def main():
                         if cal is not None and 'Earnings Date' in cal:
                             e_dt = cal['Earnings Date'][0].date()
                             e_str = e_dt.strftime('%Y-%m-%d')
-                    except: pass
+                    except:
+                        pass
                 
                 if e_str != "N/A":
-                    e_date_obj = datetime.datetime.strptime(e_str, '%Y-%m-%d').date()
-                    if 0 <= (e_date_obj - today).days <= 7:
-                        is_near = True
+                    try:
+                        e_date_obj = datetime.datetime.strptime(e_str, '%Y-%m-%d').date()
+                        if 0 <= (e_date_obj - today).days <= 7:
+                            is_near = True
+                    except:
+                        pass
 
                 passed.append({
                     "Symbol": t_up,
-                    "Price": round(float(price), 2),
+                    "Price": round(float(close_price), 2),
                     "MA_Days": ma_days,
                     "Diff_Val": float(diff_ratio),
                     "Diff_Str": f"{diff_ratio*100:+.2f}%",
@@ -98,20 +112,23 @@ def main():
                     "Is_Portfolio": is_hold,
                     "Note": port_upper.get(t_up, "")
                 })
-        except: continue
+        except Exception as e:
+            print(f"處理 {ticker} 時出錯: {e}")
+            continue
 
-    # 排序：持股(0) > 財報(0) > 偏離度
+    # 排序：持股置頂 > 財報預警 > 偏離度
     passed.sort(key=lambda x: (not x['Is_Portfolio'], not x['Warning'], -x['Diff_Val']))
 
+    # 生成網頁內容
     rows_html = ""
     for x in passed:
         header_cls = "bg-dark" if x['Is_Portfolio'] else ("bg-danger" if x['Warning'] else "bg-primary")
-        card_style = "border: 3px solid #dc3545;" if x['Warning'] else ""
+        card_border = "border: 3px solid #dc3545;" if x['Warning'] else ""
         badge_p = f'<span class="badge bg-warning text-dark ms-2">💰 持有: {x["Note"]}</span>' if x['Is_Portfolio'] else ""
         badge_w = '<span class="badge bg-warning text-dark ms-2">⚠️ 近期財報</span>' if x['Warning'] else ""
 
         rows_html += f"""
-        <div class="card mb-4 shadow-sm" style="{card_style}">
+        <div class="card mb-4 shadow-sm" style="{card_border}">
             <div class="card-header d-flex justify-content-between align-items-center {header_cls} text-white">
                 <h5 class="mb-0">{x['Symbol']} {badge_p} {badge_w}</h5>
                 <span class="badge bg-light text-dark">財報日: {x['Earnings']}</span>
