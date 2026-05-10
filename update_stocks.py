@@ -2,12 +2,13 @@ import yfinance as yf
 import pandas as pd
 import datetime
 import os
+import requests
 
 # =================================================================
-# 1. 全局配置區 (以後改這裡即可)
+# 1. 全局配置區
 # =================================================================
-DEFAULT_MA = 20        # 預設均線天數 (例如 20, 60)
-SEARCH_RANGE = 0.01    # 預設偏離範圍 (0.01 代表 1%)
+DEFAULT_MA = 20        # 預設均線天數
+SEARCH_RANGE = 0.01    # 預設偏離範圍 (1%)
 
 # 持股紀錄區 { "代碼": "備註內容" }
 MY_PORTFOLIO = {
@@ -15,18 +16,20 @@ MY_PORTFOLIO = {
     "V": "長期持有計畫",
 }
 
-# 財報日手動修正區 (當 API 抓不到或 N/A 時，會強制顯示此日期並判斷紅框)
+# 財報日手動修正區
 MANUAL_EARNINGS = {
     "ARMK": "2026-05-12",
 }
 
 # 特殊標的自定義設定 { "代碼": (MA天數, 偏離範圍) }
-# 例如 V 想看 19MA, 偏離度 1%
+# 這裡已改為大寫 "V"
 CUSTOM_CONFIG = {
     "V": (19, 0.01),
+    "AAPL": (20, 0.01),
+    "NVDA": (10, 0.015),
 }
 
-# 均線篩選觀察名單 (除了持股外，你想掃描的 190 檔名單請放在這)
+# 掃描清單
 TICKERS = [
     "INTU", "GOOGL", "PLUS", "AXP", "AIT", "NVO", "ACN", "AGM", "BKNG", "GAJG", 
     "ASML", "AME", "AAPL", "IBP", "PAYC", "URI", "GIB", "AEE", "XEL", "WEC", 
@@ -51,51 +54,58 @@ TICKERS = [
 ]
 
 # =================================================================
-# 2. 核心程式邏輯 (一般不需要修改)
+# 2. 核心程式邏輯
 # =================================================================
 
 def main():
     today = datetime.date.today()
-    print(f"正在執行掃描... 今日日期: {today}")
+    session = requests.Session()
+    session.headers.update({'User-Agent': 'Mozilla/5.0'})
     
-    # 下載數據，使用 group_by 確保結構穩定
-    df_all = yf.download(TICKERS, period="150d", interval="1d", group_by='ticker', progress=False)
+    print(f"正在執行掃描... 參考日期: {today}")
+    
+    # 下載數據
+    df_all = yf.download(TICKERS, period="150d", interval="1d", group_by='ticker', progress=False, session=session)
     
     passed = []
+    # 預先處理持股清單與特殊設定的 Key 為大寫
     portfolio_upper = {k.upper(): v for k, v in MY_PORTFOLIO.items()}
+    config_upper = {k.upper(): v for k, v in CUSTOM_CONFIG.items()}
 
     for ticker in TICKERS:
         try:
-            if ticker not in df_all.columns.levels[0]: continue
-            df_stock = df_all[ticker].dropna()
+            t_upper = ticker.upper()
+            if t_upper not in df_all.columns.levels[0]: continue
+            
+            df_stock = df_all[t_upper].dropna()
             if df_stock.empty: continue
             
-            # 取得該標的的專屬設定 (如果沒有就用預設)
-            ma_days, specific_range = CUSTOM_CONFIG.get(ticker, (DEFAULT_MA, SEARCH_RANGE))
+            # 取得該標的的專屬設定
+            ma_days, specific_range = config_upper.get(t_upper, (DEFAULT_MA, SEARCH_RANGE))
             
             close_series = df_stock['Close']
             price = close_series.iloc[-1]
             ma_val = close_series.rolling(ma_days).mean().iloc[-1]
             diff_ratio = (price / ma_val) - 1
             
-            is_portfolio = ticker.upper() in portfolio_upper
+            is_portfolio = t_upper in portfolio_upper
 
             # 判斷邏輯：是持股 OR 符合偏離範圍
             if is_portfolio or abs(diff_ratio) <= specific_range:
-                # 財報抓取邏輯
-                e_str = MANUAL_EARNINGS.get(ticker, "N/A")
+                # 財報抓取
+                e_str = MANUAL_EARNINGS.get(t_upper, "N/A")
                 is_near = False
                 
                 if e_str == "N/A":
                     try:
-                        t_obj = yf.Ticker(ticker)
+                        t_obj = yf.Ticker(t_upper, session=session)
                         cal = t_obj.calendar
                         if cal is not None and 'Earnings Date' in cal:
                             e_dt = cal['Earnings Date'][0].date()
                             e_str = e_dt.strftime('%Y-%m-%d')
                     except: pass
                 
-                # 判斷是否亮紅燈 (7天內)
+                # 判斷預警 (7天內)
                 if e_str != "N/A":
                     e_date_obj = datetime.datetime.strptime(e_str, '%Y-%m-%d').date()
                     delta = (e_date_obj - today).days
@@ -103,7 +113,7 @@ def main():
                         is_near = True
 
                 passed.append({
-                    "Symbol": ticker,
+                    "Symbol": t_upper,
                     "Price": round(float(price), 2),
                     "MA_Days": ma_days,
                     "Diff_Val": float(diff_ratio),
@@ -111,19 +121,16 @@ def main():
                     "Earnings": e_str,
                     "Warning": is_near,
                     "Is_Portfolio": is_portfolio,
-                    "Note": portfolio_upper.get(ticker.upper(), "")
+                    "Note": portfolio_upper.get(t_upper, "")
                 })
-        except Exception as e:
-            print(f"處理 {ticker} 時跳過: {e}")
-            continue
+        except: continue
 
-    # 排序：持股(0) > 非持股(1)，接著按偏離度降序
-    passed.sort(key=lambda x: (0 if x['Is_Portfolio'] else 1, -x['Diff_Val']))
+    # 排序：持股置頂 -> 財報預警 -> 偏離度降序
+    passed.sort(key=lambda x: (not x['Is_Portfolio'], not x['Warning'], -x['Diff_Val']))
 
     # 生成 HTML
     rows_html = ""
     for x in passed:
-        # 樣式決定：持股黑、預警紅、一般藍
         header_cls = "bg-dark" if x['Is_Portfolio'] else ("bg-danger" if x['Warning'] else "bg-primary")
         card_style = "border: 3px solid #dc3545;" if x['Warning'] else ""
         badge_p = f'<span class="badge bg-warning text-dark ms-2">💰 持有: {x["Note"]}</span>' if x['Is_Portfolio'] else ""
@@ -164,9 +171,7 @@ def main():
             </div>
         </div>"""
 
-    # 台北時間顯示
     now_str = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M")
-    
     html_final = f"""
     <!DOCTYPE html>
     <html lang="zh-TW">
