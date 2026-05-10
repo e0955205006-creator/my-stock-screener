@@ -1,12 +1,12 @@
 import yfinance as yf
 import pandas as pd
 import datetime
-import time
 
 # --- 1. 參數與自定義區 ---
 SEARCH_RANGE = 0.01  
 DEFAULT_MA = 20
 
+# 格式: "代號": (MA天數, 專屬搜尋範圍)
 CUSTOM_CONFIG = {
     "V": (19, 0.01),      
     "AAPL": (20, 0.01),   
@@ -39,8 +39,7 @@ TICKERS = [
 
 def get_clean_name(ticker_obj, symbol):
     try:
-        info = ticker_obj.info
-        name = info.get('shortName') or info.get('longName') or symbol
+        name = ticker_obj.info.get('shortName') or ticker_obj.info.get('longName') or symbol
         for suffix in [" Inc.", " Corp.", " Corporation", " Ltd.", " plc"]:
             name = name.replace(suffix, "")
         return name
@@ -48,11 +47,9 @@ def get_clean_name(ticker_obj, symbol):
         return symbol
 
 def main():
-    # 下載數據
     data = yf.download(TICKERS, period="100d", interval="1d", progress=False)['Close']
     passed = []
     today = datetime.datetime.now()
-    today_date = today.date()
     
     for ticker in TICKERS:
         try:
@@ -69,74 +66,44 @@ def main():
             if abs(diff_ratio) <= specific_range:
                 t_obj = yf.Ticker(ticker)
                 
-                # --- 強制獲取財報日期邏輯 ---
                 earnings_date = "N/A"
                 is_near_earnings = False
-                
-                # 方案 A: 透過 calendar 屬性 (最準確但易失敗)
                 try:
-                    cal = t_obj.get_calendar()
-                    if cal and 'Earnings Date' in cal:
-                        target_dt = cal['Earnings Date'][0]
-                        e_date = target_dt.replace(tzinfo=None).date()
+                    cal = t_obj.calendar
+                    if 'Earnings Date' in cal and cal['Earnings Date']:
+                        e_date = cal['Earnings Date'][0]
                         earnings_date = e_date.strftime('%Y-%m-%d')
-                except:
-                    pass
-
-                # 方案 B: 如果 A 失敗，嘗試 earnings_dates 歷史表 (獲取未來的日期)
-                if earnings_date == "N/A":
-                    try:
-                        e_df = t_obj.get_earnings_dates()
-                        if e_df is not None and not e_df.empty:
-                            # 移除時區並過濾出今天以後的日期
-                            e_df.index = e_df.index.tz_localize(None)
-                            future_dates = e_df.index[e_df.index.date >= today_date]
-                            if not future_dates.empty:
-                                # 取最接近今天的一個
-                                e_date = future_dates.min().date()
-                                earnings_date = e_date.strftime('%Y-%m-%d')
-                    except:
-                        pass
-
-                # 判定預警 (只要日期不是 N/A 就計算天數)
-                if earnings_date != "N/A":
-                    e_date_obj = datetime.datetime.strptime(earnings_date, '%Y-%m-%d').date()
-                    delta = (e_date_obj - today_date).days
-                    if 0 <= delta <= 7:
-                        is_near_earnings = True
+                        if 0 <= (e_date.replace(tzinfo=None) - today).days <= 7:
+                            is_near_earnings = True
+                except: pass
 
                 passed.append({
                     "Symbol": ticker,
                     "Name": get_clean_name(t_obj, ticker),
                     "Price": round(float(price), 2),
                     "MA_Days": ma_days,
-                    "Diff_Val": float(diff_ratio), 
+                    "Diff_Val": float(diff_ratio), # 核心排序數值
                     "Diff_Str": f"{diff_ratio*100:+.2f}%",
                     "Earnings": earnings_date,
                     "Warning": is_near_earnings
                 })
-                # 加入極短延遲避免 API 過載
-                time.sleep(0.1)
-                
-        except Exception as e:
-            print(f"處理 {ticker} 時發生錯誤: {e}")
-            continue
+        except: continue
 
-    # 排序：從正到負
+    # --- 關鍵修正：確保排序針對數值進行降冪排列 ---
+    # reverse=True 代表從大到小 (從 +0.99 排到 -0.99)
     passed.sort(key=lambda x: x['Diff_Val'], reverse=True)
     
     now = today.strftime("%Y-%m-%d %H:%M:%S")
     rows = ""
     for x in passed:
         badge_color = "bg-success" if x['Diff_Val'] >= 0 else "bg-danger"
-        header_color = "bg-danger" if x['Warning'] else "bg-primary"
         bg_style = "background-color: #fff5f5;" if x['Warning'] else ""
-        warning_tag = '<span class="badge bg-warning text-dark ms-2">⚠️ 近期財報</span>' if x['Warning'] else ""
+        header_color = "bg-danger" if x['Warning'] else "bg-primary"
         
         rows += f"""
         <div class="card mb-4 shadow border-0" style="{bg_style}">
             <div class="card-header d-flex justify-content-between align-items-center {header_color} text-white">
-                <h5 class="mb-0">{x['Name']} ({x['Symbol']}){warning_tag}</h5>
+                <h5 class="mb-0">{x['Name']} ({x['Symbol']})</h5>
                 <span class="badge bg-light text-dark">下次財報: {x['Earnings']}</span>
             </div>
             <div class="card-body p-3">
