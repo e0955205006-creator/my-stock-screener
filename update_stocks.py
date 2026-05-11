@@ -13,7 +13,6 @@ def main():
     today_str = today_dt.strftime("%Y-%m-%d %H:%M")
     session = requests.Session()
     
-    print("下載試算表數據...")
     try:
         response = session.get(SHEET_URL)
         df = pd.read_csv(io.StringIO(response.text))
@@ -25,9 +24,10 @@ def main():
     tickers = df['Ticker'].dropna().astype(str).str.strip().tolist()
     data = yf.download(tickers, period="150d", group_by='ticker', progress=False)
 
-    results_html = ""
-    # --- TradingView 模板串 ---
-    # 我們把所有的括號都寫死，不讓 Python 動它
+    hold_cards = ""    # 存放持股 (Y) 的 HTML
+    watch_cards = ""   # 存放符合偏離度但非持股的 HTML
+
+    # --- TradingView 模板 ---
     tv_template = """
     <div id="tv_SYMBOL_PLACEHOLDER" style="height:400px;"></div>
     <script src="https://s3.tradingview.com/tv.js"></script>
@@ -55,11 +55,12 @@ def main():
             ma_val = s_data['Close'].rolling(int(ma_len)).mean().iloc[-1]
             diff = (price / ma_val) - 1
             
+            # 判斷是否需要顯示
             if is_hold or abs(diff) <= 0.01:
                 bg = "bg-dark" if is_hold else "bg-primary"
                 d_color = "text-danger" if diff < 0 else "text-success"
                 
-                # 手動建立卡片 HTML
+                # 建立卡片
                 card = '<div class="card mb-4 shadow border-0">'
                 card += '<div class="card-header ' + bg + ' text-white d-flex justify-content-between">'
                 card += '<span>' + symbol + ' <b style="color:#ffc107;">' + (note if is_hold else "") + '</b></span>'
@@ -68,25 +69,31 @@ def main():
                 card += '<span class="' + d_color + '" style="font-weight:bold;">' + "{:.2f}%".format(diff*100) + '</span> | '
                 card += '<b>價格:</b> $' + "{:.2f}".format(price) + '</p>'
                 
-                # 替換 TradingView 模板內容
                 current_tv = tv_template.replace("SYMBOL_PLACEHOLDER", symbol).replace("MA_LEN_PLACEHOLDER", ma_len)
                 card += current_tv
                 card += '</div></div>'
-                results_html += card
+                
+                # --- 分流排序：持股放前面 ---
+                if is_hold:
+                    hold_cards += card
+                else:
+                    watch_cards += card
         except:
             continue
 
-    # 組合最後網頁
-    final_page = '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
-    final_page += '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"></head>'
-    final_page += '<body class="bg-light py-5"><div class="container" style="max-width:800px;">'
-    final_page += '<div class="text-center mb-5"><h2 class="fw-bold">🎯 美股連動儀表板</h2>'
-    final_page += '<p class="text-muted small">台北時間: ' + today_str + '</p></div>'
-    final_page += results_html if results_html else '<p class="text-center">目前無符合條件股票</p>'
-    final_page += '</div></body></html>'
+    # 組合最後網頁：持股先放，監控後放
+    final_html = hold_cards + watch_cards
+    
+    page = '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
+    page += '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"></head>'
+    page += '<body class="bg-light py-5"><div class="container" style="max-width:800px;">'
+    page += '<div class="text-center mb-5"><h2 class="fw-bold">🎯 美股雲端連動儀表板</h2>'
+    page += '<p class="text-muted small">最後更新: ' + today_str + '</p></div>'
+    page += final_html if final_html else '<p class="text-center">目前無符合條件股票</p>'
+    page += '</div></body></html>'
 
     with open("index.html", "w", encoding="utf-8") as f:
-        f.write(final_page)
+        f.write(page)
 
 if __name__ == "__main__":
     main()
