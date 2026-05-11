@@ -25,13 +25,12 @@ def main():
         return
 
     tickers_list = df['Ticker'].dropna().astype(str).str.strip().tolist()
-    # 批次下載價格數據 (效率較高)
     data = yf.download(tickers_list, period="150d", group_by='ticker', progress=False)
 
-    hold_cards = ""    # 存放持股 (Y)
-    watch_cards = ""   # 存放觀察股
+    hold_cards = ""    
+    watch_cards = ""   
 
-    # --- TradingView 模板 (避開 Python 大括號解析) ---
+    # --- TradingView 模板 ---
     tv_template = """
     <div id="tv_SYMBOL_PLACEHOLDER" style="height:400px;"></div>
     <script src="https://s3.tradingview.com/tv.js"></script>
@@ -51,29 +50,34 @@ def main():
             ma_len = str(int(row.get('MA', 20)))
             note = str(row.get('Note', '')) if pd.notnull(row.get('Note')) else ""
             
-            # --- 財報日邏輯：自動抓取 + 效期判定 + 試算表補位 ---
+            # --- 財報日邏輯：全面過濾舊日期 ---
             e_day = "N/A"
             border_style = "border: none;" 
             
-            # A. 嘗試從 Yahoo 自動抓取
+            # A. 嘗試從 Yahoo 自動抓取並過濾
             try:
                 t_obj = yf.Ticker(symbol)
                 cal = t_obj.calendar
                 if cal is not None and not cal.empty and 'Earnings Date' in cal.index:
                     raw_e_dt = cal.loc['Earnings Date'].iloc[0].date()
-                    # 只有當 Yahoo 給的日期是「今天或未來」才採用
-                    if raw_e_dt >= today_date:
+                    if raw_e_dt >= today_date: # 只拿今天或以後的
                         e_day = raw_e_dt.strftime('%Y-%m-%d')
             except: 
                 e_day = "N/A"
 
-            # B. 如果 Yahoo 沒抓到（或是過期的），改用試算表手動填寫的
+            # B. 如果 Yahoo 沒抓到（或不符標記），嘗試讀取試算表並「再次過濾」
             if e_day == "N/A":
                 e_val = row.get('Earnings', '')
                 if pd.notnull(e_val) and str(e_val).strip().lower() != 'nan':
-                    e_day = str(e_val).strip()
+                    sheet_date_str = str(e_val).strip()
+                    try:
+                        sheet_dt = datetime.datetime.strptime(sheet_date_str, '%Y-%m-%d').date()
+                        if sheet_dt >= today_date: # 試算表的日期也要比今天新
+                            e_day = sheet_date_str
+                    except:
+                        pass # 格式不對就維持 N/A
 
-            # C. 財報預警：判斷是否在 7 日內 (觸發紅框)
+            # C. 財報預警 (只對有效的 e_day 進行判定)
             if e_day != "N/A":
                 try:
                     target_dt = datetime.datetime.strptime(e_day, '%Y-%m-%d').date()
@@ -90,12 +94,10 @@ def main():
             ma_val = s_data['Close'].rolling(int(ma_len)).mean().iloc[-1]
             diff = (price / ma_val) - 1
             
-            # 顯示判定
             if is_hold or abs(diff) <= 0.01:
                 bg = "bg-dark" if is_hold else "bg-primary"
                 d_color = "text-danger" if diff < 0 else "text-success"
                 
-                # 建立卡片 HTML
                 card = '<div class="card mb-4 shadow" style="' + border_style + '">'
                 card += '<div class="card-header ' + bg + ' text-white d-flex justify-content-between">'
                 card += '<span>' + symbol + ' <b style="color:#ffc107;">' + (note if is_hold else "") + '</b></span>'
@@ -104,17 +106,15 @@ def main():
                 card += '<span class="' + d_color + '" style="font-weight:bold;">' + "{:.2f}%".format(diff*100) + '</span> | '
                 card += '<b>價格:</b> $' + "{:.2f}".format(price) + '</p>'
                 
-                # 替換圖表模板
                 current_tv = tv_template.replace("SYMBOL_PLACEHOLDER", symbol).replace("MA_LEN_PLACEHOLDER", ma_len)
                 card += current_tv
                 card += '</div></div>'
                 
-                # 持股置頂分流
                 if is_hold: hold_cards += card
                 else: watch_cards += card
         except: continue
 
-    # 組合最終頁面
+    # 組合頁面
     final_content = hold_cards + watch_cards
     page = '<!DOCTYPE html><html lang="zh-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
     page += '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"></head>'
@@ -127,7 +127,6 @@ def main():
 
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(page)
-    print("✅ 全部任務完成，網頁已更新")
 
 if __name__ == "__main__":
     main()
