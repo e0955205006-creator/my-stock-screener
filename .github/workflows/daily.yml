@@ -2,27 +2,34 @@ name: Daily Stock Screen
 
 on:
   schedule:
-    - cron: '0 21 * * *' # 每天 UTC 21:00 (台灣時間凌晨 5:00)
+    - cron: '0 21 * * *' # 每天台灣時間凌晨 5:00 執行
   workflow_dispatch:      # 允許手動執行
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write     # 確保有寫入權限
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.10'
+
       - name: Install dependencies
-        run: pip install yfinance pandas
-      - name: Run screener
-        run: python update_stocks.py
-      - name: Commit and push if changed
         run: |
-          git config --global user.name "GitHub Action"
-          git config --global user.email "action@github.com"
+          pip install -r requirements.txt
+
+      - name: Run script
+        run: python update_stocks.py
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
           git add index.html
-          git commit -m "Auto update: $(date)" || exit 0
+          git commit -m "Auto update: $(date)" || echo "No changes to commit"
           git push
