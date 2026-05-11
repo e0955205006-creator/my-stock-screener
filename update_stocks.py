@@ -10,6 +10,7 @@ SHEET_URL = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/export?form
 
 def main():
     today_dt = datetime.datetime.now() + datetime.timedelta(hours=8)
+    today_date = today_dt.date()
     today_str = today_dt.strftime("%Y-%m-%d %H:%M")
     session = requests.Session()
     
@@ -22,8 +23,6 @@ def main():
         return
 
     tickers_list = df['Ticker'].dropna().astype(str).str.strip().tolist()
-    
-    # --- 下載股票數據 (價格) ---
     data = yf.download(tickers_list, period="150d", group_by='ticker', progress=False)
 
     hold_cards = ""    
@@ -49,27 +48,35 @@ def main():
             ma_len = str(int(row.get('MA', 20)))
             note = str(row.get('Note', '')) if pd.notnull(row.get('Note')) else ""
             
-            # --- 財報日優先權邏輯 ---
+            # --- 財報日與紅框判斷邏輯 ---
             e_day = "N/A"
+            border_style = "border: none;" # 預設無邊框
+            
+            # A. 嘗試抓取 Yahoo
             try:
-                # 1. 嘗試從 Yahoo 抓取 (自動抓取)
                 t_obj = yf.Ticker(symbol)
                 cal = t_obj.calendar
-                if cal is not None and not cal.empty:
-                    # 抓取 Earnings Date 第一筆日期
-                    if 'Earnings Date' in cal.index:
-                        d = cal.loc['Earnings Date'].iloc[0]
-                        e_day = d.strftime('%Y-%m-%d')
-            except:
-                e_day = "N/A"
+                if cal is not None and not cal.empty and 'Earnings Date' in cal.index:
+                    d = cal.loc['Earnings Date'].iloc[0]
+                    e_day = d.strftime('%Y-%m-%d')
+            except: e_day = "N/A"
 
-            # 2. 如果 Yahoo 沒抓到，改抓試算表填的
+            # B. Yahoo 沒抓到則改用試算表
             if e_day == "N/A":
                 e_val = row.get('Earnings', '')
                 if pd.notnull(e_val) and str(e_val).strip().lower() != 'nan':
                     e_day = str(e_val).strip()
 
-            # --- 價格與均線運算 ---
+            # C. 判斷是否在 7 日內 (紅框)
+            if e_day != "N/A":
+                try:
+                    e_dt = datetime.datetime.strptime(e_day, '%Y-%m-%d').date()
+                    delta = (e_dt - today_date).days
+                    if 0 <= delta <= 7:
+                        border_style = "border: 4px solid #dc3545; box-shadow: 0 0 15px rgba(220,53,69,0.5);"
+                except: pass
+
+            # --- 價格運算 ---
             s_data = data[symbol].dropna() if len(tickers_list) > 1 else data.dropna()
             if s_data.empty: continue
             
@@ -81,7 +88,8 @@ def main():
                 bg = "bg-dark" if is_hold else "bg-primary"
                 d_color = "text-danger" if diff < 0 else "text-success"
                 
-                card = '<div class="card mb-4 shadow border-0">'
+                # 建立卡片並套用 border_style
+                card = '<div class="card mb-4 shadow" style="' + border_style + '">'
                 card += '<div class="card-header ' + bg + ' text-white d-flex justify-content-between">'
                 card += '<span>' + symbol + ' <b style="color:#ffc107;">' + (note if is_hold else "") + '</b></span>'
                 card += '<small>財報日: ' + e_day + '</small></div>'
@@ -95,15 +103,15 @@ def main():
                 
                 if is_hold: hold_cards += card
                 else: watch_cards += card
-        except:
-            continue
+        except: continue
 
     final_html = hold_cards + watch_cards
-    page = '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
+    page = '<!DOCTYPE html><html lang="zh-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
     page += '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"></head>'
     page += '<body class="bg-light py-5"><div class="container" style="max-width:800px;">'
-    page += '<div class="text-center mb-5"><h2 class="fw-bold">🎯 美股自動化監控儀表板</h2>'
-    page += '<p class="text-muted small">更新時間: ' + today_str + ' (台北)</p></div>'
+    page += '<div class="text-center mb-5"><h2 class="fw-bold">🎯 美股全自動監控儀表板</h2>'
+    page += '<p class="text-muted small">最後更新: ' + today_str + '</p>'
+    page += '<div class="badge bg-danger">紅框提示：財報將於 7 日內發布</div></div>'
     page += final_html if final_html else '<p class="text-center">目前無符合條件股票</p>'
     page += '</div></body></html>'
 
