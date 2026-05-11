@@ -21,11 +21,13 @@ def main():
         print("讀取失敗: " + str(e))
         return
 
-    tickers = df['Ticker'].dropna().astype(str).str.strip().tolist()
-    data = yf.download(tickers, period="150d", group_by='ticker', progress=False)
+    tickers_list = df['Ticker'].dropna().astype(str).str.strip().tolist()
+    
+    # --- 下載股票數據 (價格) ---
+    data = yf.download(tickers_list, period="150d", group_by='ticker', progress=False)
 
-    hold_cards = ""    # 存放持股 (Y) 的 HTML
-    watch_cards = ""   # 存放符合偏離度但非持股的 HTML
+    hold_cards = ""    
+    watch_cards = ""   
 
     # --- TradingView 模板 ---
     tv_template = """
@@ -46,25 +48,43 @@ def main():
             is_hold = str(row.get('Hold', '')).strip().upper() == 'Y'
             ma_len = str(int(row.get('MA', 20)))
             note = str(row.get('Note', '')) if pd.notnull(row.get('Note')) else ""
-            e_day = str(row.get('Earnings', 'N/A'))
             
-            s_data = data[symbol].dropna() if len(tickers) > 1 else data.dropna()
+            # --- 財報日優先權邏輯 ---
+            e_day = "N/A"
+            try:
+                # 1. 嘗試從 Yahoo 抓取 (自動抓取)
+                t_obj = yf.Ticker(symbol)
+                cal = t_obj.calendar
+                if cal is not None and not cal.empty:
+                    # 抓取 Earnings Date 第一筆日期
+                    if 'Earnings Date' in cal.index:
+                        d = cal.loc['Earnings Date'].iloc[0]
+                        e_day = d.strftime('%Y-%m-%d')
+            except:
+                e_day = "N/A"
+
+            # 2. 如果 Yahoo 沒抓到，改抓試算表填的
+            if e_day == "N/A":
+                e_val = row.get('Earnings', '')
+                if pd.notnull(e_val) and str(e_val).strip().lower() != 'nan':
+                    e_day = str(e_val).strip()
+
+            # --- 價格與均線運算 ---
+            s_data = data[symbol].dropna() if len(tickers_list) > 1 else data.dropna()
             if s_data.empty: continue
             
             price = s_data['Close'].iloc[-1]
             ma_val = s_data['Close'].rolling(int(ma_len)).mean().iloc[-1]
             diff = (price / ma_val) - 1
             
-            # 判斷是否需要顯示
             if is_hold or abs(diff) <= 0.01:
                 bg = "bg-dark" if is_hold else "bg-primary"
                 d_color = "text-danger" if diff < 0 else "text-success"
                 
-                # 建立卡片
                 card = '<div class="card mb-4 shadow border-0">'
                 card += '<div class="card-header ' + bg + ' text-white d-flex justify-content-between">'
                 card += '<span>' + symbol + ' <b style="color:#ffc107;">' + (note if is_hold else "") + '</b></span>'
-                card += '<small>財報: ' + e_day + '</small></div>'
+                card += '<small>財報日: ' + e_day + '</small></div>'
                 card += '<div class="card-body"><p><b>' + ma_len + 'MA 偏離:</b> '
                 card += '<span class="' + d_color + '" style="font-weight:bold;">' + "{:.2f}%".format(diff*100) + '</span> | '
                 card += '<b>價格:</b> $' + "{:.2f}".format(price) + '</p>'
@@ -73,22 +93,17 @@ def main():
                 card += current_tv
                 card += '</div></div>'
                 
-                # --- 分流排序：持股放前面 ---
-                if is_hold:
-                    hold_cards += card
-                else:
-                    watch_cards += card
+                if is_hold: hold_cards += card
+                else: watch_cards += card
         except:
             continue
 
-    # 組合最後網頁：持股先放，監控後放
     final_html = hold_cards + watch_cards
-    
     page = '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
     page += '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"></head>'
     page += '<body class="bg-light py-5"><div class="container" style="max-width:800px;">'
-    page += '<div class="text-center mb-5"><h2 class="fw-bold">🎯 美股雲端連動儀表板</h2>'
-    page += '<p class="text-muted small">最後更新: ' + today_str + '</p></div>'
+    page += '<div class="text-center mb-5"><h2 class="fw-bold">🎯 美股自動化監控儀表板</h2>'
+    page += '<p class="text-muted small">更新時間: ' + today_str + ' (台北)</p></div>'
     page += final_html if final_html else '<p class="text-center">目前無符合條件股票</p>'
     page += '</div></body></html>'
 
