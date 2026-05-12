@@ -11,7 +11,7 @@ SHEET_URL = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/export?form
 def backtest_strategy(df_history, ma_series):
     """
     回測邏輯 (收盤破才賣) 並計算勝率：
-    - 返回值: (總報酬率, 勝率, 總交易次數)
+    - 只要該次交易報酬率 > 0 即視為成功
     """
     total_return = 0.0
     trades_count = 0
@@ -42,10 +42,9 @@ def backtest_strategy(df_history, ma_series):
                 if close < ma: continue
         else:
             exit_price = None
-            # 情境 B：買進次日開盤賣
+            # 賣出條件：買進次日開盤賣(若前日破線) 或 當日收盤破線
             if i == buy_day_index + 1 and subset['Close'].iloc[i-1] < ma_subset.iloc[i-1]:
                 exit_price = open_p
-            # 情境 A：收盤價跌破均線
             elif close < ma:
                 exit_price = close
             
@@ -53,14 +52,14 @@ def backtest_strategy(df_history, ma_series):
                 trade_ret = (exit_price / buy_price) - 1
                 total_return += trade_ret
                 trades_count += 1
-                if trade_ret > 0:
-                    success_trades += 1
+                if trade_ret > 0: success_trades += 1
                 in_position = False
                 
     win_rate = (success_trades / trades_count * 100) if trades_count > 0 else 0.0
     return total_return * 100, win_rate, trades_count
 
 def main():
+    # 設定時區與今天日期
     today_dt = datetime.datetime.now() + datetime.timedelta(hours=8)
     today_str = today_dt.strftime("%Y-%m-%d %H:%M")
     
@@ -68,7 +67,9 @@ def main():
         response = requests.get(SHEET_URL)
         df = pd.read_csv(io.StringIO(response.text))
         df.columns = [str(c).strip() for c in df.columns]
-    except: return
+    except Exception as e:
+        print(f"讀取 Google Sheet 失敗: {e}")
+        return
 
     tickers_list = df['Ticker'].dropna().astype(str).str.strip().tolist()
     data = yf.download(tickers_list, period="3y", group_by='ticker', progress=False)
@@ -82,9 +83,11 @@ def main():
             ma_len = int(row.get('MA', 20))
             note = str(row.get('Note', '')) if pd.notnull(row.get('Note')) else ""
             
+            # 獲取個別股票資料
             s_data = data[symbol].dropna() if len(tickers_list) > 1 else data.dropna()
             if s_data.empty: continue
             
+            # 計算均線與回測
             ma_series = s_data['Close'].rolling(ma_len).mean()
             ret, win_rate, count = backtest_strategy(s_data, ma_series)
             
@@ -92,15 +95,37 @@ def main():
             current_ma = ma_series.iloc[-1]
             diff = (current_price / current_ma) - 1
             
-            # 財報日
+            # --- 核心邏輯：財報日判定 ---
             e_day = "N/A"
+            
+            # 1. 優先從 API 抓取
             try:
-                cal = yf.Ticker(symbol).calendar
-                if cal is not None and not cal.empty:
-                    raw_e = cal.loc['Earnings Date'].iloc[0].date()
-                    if raw_e >= today_dt.date(): e_day = raw_e.strftime('%Y-%m-%d')
-            except: pass
+                t_obj = yf.Ticker(symbol)
+                cal = t_obj.calendar
+                if cal is not None and not cal.empty and 'Earnings Date' in cal.index:
+                    raw_e = cal.loc['Earnings Date'].iloc[0]
+                    if isinstance(raw_e, (list, pd.Series)): raw_e = raw_e[0]
+                    if hasattr(raw_e, 'date'): raw_e = raw_e.date()
+                    
+                    # 必須是今天或以後才顯示
+                    if raw_e >= today_dt.date():
+                        e_day = raw_e.strftime('%Y-%m-%d')
+            except:
+                pass
 
+            # 2. API 沒抓到，檢查 Google Sheet 欄位 (欄位名稱需為 'Earnings')
+            if e_day == "N/A":
+                sheet_val = row.get('Earnings', '')
+                if pd.notnull(sheet_val) and str(sheet_val).strip() != "":
+                    try:
+                        sheet_date = pd.to_datetime(sheet_val).date()
+                        # 工作表日期也必須是今天或以後
+                        if sheet_date >= today_dt.date():
+                            e_day = sheet_date.strftime('%Y-%m-%d')
+                    except:
+                        pass
+
+            # 篩選顯示條件：持股中 或 偏離度 1% 以內
             if is_hold or abs(diff) <= 0.01:
                 bg = "bg-dark" if is_hold else "bg-primary"
                 ret_color = "#90ee90" if ret > 0 else "#ffcccb"
@@ -111,30 +136,54 @@ def main():
                         <div>{symbol} <b style="color:#ffc107;">{note if is_hold else ""}</b></div>
                         <div class="text-end">
                             <small style="color:{ret_color}; font-weight:bold;">3Y報酬: {ret:+.1f}%</small><br>
-                            <small style="color:#fff; opacity:0.9;">勝率: {win_rate:.1f}% ({count}次交易)</small>
+                            <small style="color:#fff; opacity:0.8;">勝率: {win_rate:.1f}% ({count}次交易)</small>
                         </div>
                     </div>
                     <div class="card-body">
-                        <p><b>{ma_len}MA 偏離:</b> {diff*100:.2f}% | <b>現價:</b> ${current_price:.2f} | <b>財報:</b> {e_day}</p>
+                        <p class="mb-3">
+                            <b>{ma_len}MA 偏離:</b> {diff*100:.2f}% | 
+                            <b>現價:</b> ${current_price:.2f} | 
+                            <b>財報日:</b> <span class="badge bg-warning text-dark">{e_day}</span>
+                        </p>
                         <div id="tv_{symbol}" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
                         <script>
                             new TradingView.widget({{
                                 "autosize": true, "symbol": "{symbol}", "interval": "D", "theme": "light",
                                 "style": "1", "locale": "zh_TW", "container_id": "tv_{symbol}",
-                                "hide_top_toolbar": true,
+                                "hide_top_toolbar": true, "hide_side_toolbar": true,
                                 "studies": [{{ "id": "MASimple@tv-basicstudies", "inputs": {{ "length": {ma_len} }} }}]
                             }});
                         </script>
                     </div>
                 </div>'''
                 all_data_list.append({'is_hold': is_hold, 'diff': diff, 'html': card_html})
-        except: continue
+        except Exception as e:
+            print(f"處理 {symbol} 出錯: {e}")
+            continue
 
+    # 排序：持股優先，其餘按偏離度排序
     all_data_list.sort(key=lambda x: (not x['is_hold'], -x['diff']))
     
+    # 產生 HTML
     with open("index.html", "w", encoding="utf-8") as f:
-        f.write(f'''<!DOCTYPE html><html lang="zh-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"></head><body class="bg-light py-5"><div class="container" style="max-width:800px;"><h2 class="text-center mb-4">📈 趨勢波段監控儀表板</h2>{"".join([i['html'] for i in all_data_list])}</div><p class="text-center text-muted small">最後更新: {today_str}</p></body></html>''')
+        f.write(f'''
+        <!DOCTYPE html>
+        <html lang="zh-TW">
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+            <title>投資策略監控</title>
+        </head>
+        <body class="bg-light py-5">
+            <div class="container" style="max-width:850px;">
+                <h2 class="text-center mb-4">📈 趨勢波段監控儀表板</h2>
+                {"".join([i['html'] for i in all_data_list])}
+                <p class="text-center text-muted mt-4 small">最後更新: {today_str}</p>
+            </div>
+        </body>
+        </html>''')
 
 if __name__ == "__main__":
     main()
