@@ -10,16 +10,17 @@ SHEET_URL = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/export?form
 
 def backtest_strategy(df_history, ma_series):
     """
-    優化回測邏輯 (盤中觸價買進)：
-    - 買入觸發價：trigger = 均線 * 1.015
-    - 買入條件：當日最低價 <= trigger 且 當日最高價 > trigger (確保盤中觸及該價位)
-    - 買入成交價：一律以 trigger 計算
-    - 停利：持有期間盤中最高價 >= 買入價 * 1.05 (獲利 5%)
-    - 離場：收盤價 < 當前均線
+    更新後的回測邏輯 (盤中觸線 99% 賣出)：
+    - 買入：當日 High > (MA*1.015) 且 Low <= (MA*1.015)
+    - 買入價：MA * 1.015
+    - 賣出：
+        1. 盤中 Low <= MA -> 以 (MA * 0.99) 賣出 (情境 A)
+        2. 若買進當天收盤 < MA -> 次日 Open 賣出 (情境 B)
     """
     total_return = 0.0
     in_position = False
     buy_price = 0.0
+    buy_day_index = -1
     
     start_idx = ma_series.first_valid_index()
     if start_idx is None: return 0.0
@@ -31,24 +32,31 @@ def backtest_strategy(df_history, ma_series):
         high = subset['High'].iloc[i]
         low = subset['Low'].iloc[i]
         close = subset['Close'].iloc[i]
+        open_p = subset['Open'].iloc[i]
         ma = ma_subset.iloc[i]
-        trigger_price = ma * 1.015
+        trigger_buy = ma * 1.015
         
         if not in_position:
-            # 修改點：確保盤中是有觸碰到 trigger_price 的 (High > trigger 且 Low <= trigger)
-            if high > trigger_price and low <= trigger_price:
-                buy_price = trigger_price
+            # 買入條件
+            if high > trigger_buy and low <= trigger_buy:
+                buy_price = trigger_buy
                 in_position = True
+                buy_day_index = i
+                
+                # 情境 B 檢查：當天買進後收盤就破線
+                if close < ma:
+                    continue 
         else:
             # 賣出邏輯
-            # 1. 停利：盤中最高價達到買價 5%
-            if high >= buy_price * 1.05:
-                total_return += 0.05
+            # 情境 B 延續：買進次日開盤賣
+            if i == buy_day_index + 1 and subset['Close'].iloc[i-1] < ma_subset.iloc[i-1]:
+                exit_price = open_p
+                total_return += (exit_price / buy_price) - 1
                 in_position = False
-            # 2. 離場：收盤跌破均線
-            elif close < ma:
-                exit_return = (close / buy_price) - 1
-                total_return += exit_return
+            # 情境 A：盤中觸及均線 (Low <= MA)
+            elif low <= ma:
+                exit_price = ma * 0.99
+                total_return += (exit_price / buy_price) - 1
                 in_position = False
                 
     return total_return * 100
@@ -85,7 +93,7 @@ def main():
             current_ma = ma_series.iloc[-1]
             diff = (current_price / current_ma) - 1
             
-            # 財報日判定
+            # 財報日
             e_day = "N/A"
             try:
                 cal = yf.Ticker(symbol).calendar
@@ -94,25 +102,40 @@ def main():
                     if raw_e >= today_dt.date(): e_day = raw_e.strftime('%Y-%m-%d')
             except: pass
 
-            if is_hold or abs(diff) <= 0.01:
+            if is_hold or abs(diff) <= 0.05:
                 bg = "bg-dark" if is_hold else "bg-primary"
                 ret_color = "#90ee90" if strategy_ret > 0 else "#ffcccb"
                 
-                card_html = '<div class="card mb-4 shadow">'
-                card_html += '<div class="card-header ' + bg + ' text-white d-flex justify-content-between align-items-center">'
-                card_html += '<div>' + symbol + ' <b style="color:#ffc107;">' + (note if is_hold else "") + '</b></div>'
-                card_html += '<div class="text-end"><small style="color:' + ret_color + '; font-weight:bold;">3Y策略(壓回買): ' + "{:+.1f}%".format(strategy_ret) + '</small><br><small>財報日: ' + e_day + '</small></div></div>'
-                card_html += '<div class="card-body"><p><b>' + str(ma_len) + 'MA 偏離:</b> ' + "{:.2f}%".format(diff*100) + ' | <b>現價:</b> $' + "{:.2f}".format(current_price) + '</p>'
-                card_html += '<div id="tv_' + symbol + '" style="height:400px;"></div>'
-                card_html += '<script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"autosize":true,"symbol":"' + symbol + '","interval":"D","theme":"light","style":"1","locale":"zh_TW","container_id":"tv_' + symbol + '","hide_top_toolbar":true,"studies":[{"id":"MASimple@tv-basicstudies","inputs":{"length":' + str(ma_len) + '}}]});</script></div></div>'
-
+                card_html = f'''
+                <div class="card mb-4 shadow">
+                    <div class="card-header {bg} text-white d-flex justify-content-between align-items-center">
+                        <div>{symbol} <b style="color:#ffc107;">{note if is_hold else ""}</b></div>
+                        <div class="text-end">
+                            <small style="color:{ret_color}; font-weight:bold;">3Y觸線策略: {strategy_ret:+.1f}%</small><br>
+                            <small>財報日: {e_day}</small>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p><b>{ma_len}MA 偏離:</b> {diff*100:.2f}% | <b>現價:</b> ${current_price:.2f}</p>
+                        <div id="tv_{symbol}" style="height:400px;"></div>
+                        <script src="https://s3.tradingview.com/tv.js"></script>
+                        <script>
+                            new TradingView.widget({{
+                                "autosize": true, "symbol": "{symbol}", "interval": "D", "theme": "light",
+                                "style": "1", "locale": "zh_TW", "container_id": "tv_{symbol}",
+                                "hide_top_toolbar": true,
+                                "studies": [{{ "id": "MASimple@tv-basicstudies", "inputs": {{ "length": {ma_len} }} }}]
+                            }});
+                        </script>
+                    </div>
+                </div>'''
                 all_data_list.append({'is_hold': is_hold, 'diff': diff, 'html': card_html})
         except: continue
 
     all_data_list.sort(key=lambda x: (not x['is_hold'], -x['diff']))
     
     with open("index.html", "w", encoding="utf-8") as f:
-        f.write('<!DOCTYPE html><html lang="zh-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"></head><body class="bg-light py-5"><div class="container" style="max-width:800px;"><h2 class="text-center mb-4">🎯 美股全自動策略儀表板</h2>' + "".join([i['html'] for i in all_data_list]) + '</div></body></html>')
+        f.write(f'''<!DOCTYPE html><html lang="zh-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"></head><body class="bg-light py-5"><div class="container" style="max-width:800px;"><h2 class="text-center mb-4">📈 均線觸碰保護策略儀表板</h2>{"".join([i['html'] for i in all_data_list])}</div><p class="text-center text-muted small">最後更新: {today_str}</p></body></html>''')
 
 if __name__ == "__main__":
     main()
