@@ -9,10 +9,6 @@ SHEET_ID = "17stsDM0pLhb_oVvqEaTufVrd00HXa6NwlRSNVYStBkE"
 SHEET_URL = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/export?format=csv"
 
 def backtest_strategy(df_history, ma_series):
-    """
-    回測邏輯 (收盤破才賣) 並計算勝率：
-    - 只要該次交易報酬率 > 0 即視為成功
-    """
     total_return = 0.0
     trades_count = 0
     success_trades = 0
@@ -42,7 +38,6 @@ def backtest_strategy(df_history, ma_series):
                 if close < ma: continue
         else:
             exit_price = None
-            # 賣出條件：買進次日開盤賣(若前日破線) 或 當日收盤破線
             if i == buy_day_index + 1 and subset['Close'].iloc[i-1] < ma_subset.iloc[i-1]:
                 exit_price = open_p
             elif close < ma:
@@ -59,7 +54,6 @@ def backtest_strategy(df_history, ma_series):
     return total_return * 100, win_rate, trades_count
 
 def main():
-    # 設定時區與今天日期
     today_dt = datetime.datetime.now() + datetime.timedelta(hours=8)
     today_str = today_dt.strftime("%Y-%m-%d %H:%M")
     
@@ -68,7 +62,7 @@ def main():
         df = pd.read_csv(io.StringIO(response.text))
         df.columns = [str(c).strip() for c in df.columns]
     except Exception as e:
-        print(f"讀取 Google Sheet 失敗: {e}")
+        print(f"讀取失敗: {e}")
         return
 
     tickers_list = df['Ticker'].dropna().astype(str).str.strip().tolist()
@@ -83,11 +77,9 @@ def main():
             ma_len = int(row.get('MA', 20))
             note = str(row.get('Note', '')) if pd.notnull(row.get('Note')) else ""
             
-            # 獲取個別股票資料
             s_data = data[symbol].dropna() if len(tickers_list) > 1 else data.dropna()
             if s_data.empty: continue
             
-            # 計算均線與回測
             ma_series = s_data['Close'].rolling(ma_len).mean()
             ret, win_rate, count = backtest_strategy(s_data, ma_series)
             
@@ -95,10 +87,11 @@ def main():
             current_ma = ma_series.iloc[-1]
             diff = (current_price / current_ma) - 1
             
-            # --- 核心邏輯：財報日判定 ---
-            e_day = "N/A"
+            # --- 財報日判定邏輯 ---
+            e_day_obj = None
+            e_day_str = "N/A"
             
-            # 1. 優先從 API 抓取
+            # 1. API 優先
             try:
                 t_obj = yf.Ticker(symbol)
                 cal = t_obj.calendar
@@ -106,36 +99,42 @@ def main():
                     raw_e = cal.loc['Earnings Date'].iloc[0]
                     if isinstance(raw_e, (list, pd.Series)): raw_e = raw_e[0]
                     if hasattr(raw_e, 'date'): raw_e = raw_e.date()
-                    
-                    # 必須是今天或以後才顯示
                     if raw_e >= today_dt.date():
-                        e_day = raw_e.strftime('%Y-%m-%d')
-            except:
-                pass
+                        e_day_obj = raw_e
+            except: pass
 
-            # 2. API 沒抓到，檢查 Google Sheet 欄位 (欄位名稱需為 'Earnings')
-            if e_day == "N/A":
+            # 2. 工作表備援
+            if e_day_obj is None:
                 sheet_val = row.get('Earnings', '')
                 if pd.notnull(sheet_val) and str(sheet_val).strip() != "":
                     try:
                         sheet_date = pd.to_datetime(sheet_val).date()
-                        # 工作表日期也必須是今天或以後
                         if sheet_date >= today_dt.date():
-                            e_day = sheet_date.strftime('%Y-%m-%d')
-                    except:
-                        pass
+                            e_day_obj = sheet_date
+                    except: pass
 
-            # 篩選顯示條件：持股中 或 偏離度 1% 以內
+            if e_day_obj:
+                e_day_str = e_day_obj.strftime('%Y-%m-%d')
+            
+            # --- 紅框邏輯：計算距離天數 ---
+            is_earning_soon = False
+            if e_day_obj:
+                days_to_earnings = (e_day_obj - today_dt.date()).days
+                if 0 <= days_to_earnings <= 7:
+                    is_earning_soon = True
+
             if is_hold or abs(diff) <= 0.01:
                 bg = "bg-dark" if is_hold else "bg-primary"
-                ret_color = "#90ee90" if ret > 0 else "#ffcccb"
+                # 紅框樣式
+                card_style = "border: 5px solid #dc3545; box-shadow: 0 0 15px rgba(220, 53, 69, 0.5);" if is_earning_soon else ""
+                warning_label = '<span class="badge bg-danger ms-2">⚠️ 財報週</span>' if is_earning_soon else ""
                 
                 card_html = f'''
-                <div class="card mb-4 shadow">
+                <div class="card mb-4 shadow" style="{card_style}">
                     <div class="card-header {bg} text-white d-flex justify-content-between align-items-center">
-                        <div>{symbol} <b style="color:#ffc107;">{note if is_hold else ""}</b></div>
+                        <div>{symbol} <b style="color:#ffc107;">{note if is_hold else ""}</b>{warning_label}</div>
                         <div class="text-end">
-                            <small style="color:{ret_color}; font-weight:bold;">3Y報酬: {ret:+.1f}%</small><br>
+                            <small style="color:{'#90ee90' if ret > 0 else '#ffcccb'}; font-weight:bold;">3Y報酬: {ret:+.1f}%</small><br>
                             <small style="color:#fff; opacity:0.8;">勝率: {win_rate:.1f}% ({count}次交易)</small>
                         </div>
                     </div>
@@ -143,7 +142,7 @@ def main():
                         <p class="mb-3">
                             <b>{ma_len}MA 偏離:</b> {diff*100:.2f}% | 
                             <b>現價:</b> ${current_price:.2f} | 
-                            <b>財報日:</b> <span class="badge bg-warning text-dark">{e_day}</span>
+                            <b>財報日:</b> <span class="badge {'bg-danger' if is_earning_soon else 'bg-warning text-dark'}">{e_day_str}</span>
                         </p>
                         <div id="tv_{symbol}" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
@@ -158,32 +157,12 @@ def main():
                     </div>
                 </div>'''
                 all_data_list.append({'is_hold': is_hold, 'diff': diff, 'html': card_html})
-        except Exception as e:
-            print(f"處理 {symbol} 出錯: {e}")
-            continue
+        except: continue
 
-    # 排序：持股優先，其餘按偏離度排序
     all_data_list.sort(key=lambda x: (not x['is_hold'], -x['diff']))
     
-    # 產生 HTML
     with open("index.html", "w", encoding="utf-8") as f:
-        f.write(f'''
-        <!DOCTYPE html>
-        <html lang="zh-TW">
-        <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-            <title>投資策略監控</title>
-        </head>
-        <body class="bg-light py-5">
-            <div class="container" style="max-width:850px;">
-                <h2 class="text-center mb-4">📈 趨勢波段監控儀表板</h2>
-                {"".join([i['html'] for i in all_data_list])}
-                <p class="text-center text-muted mt-4 small">最後更新: {today_str}</p>
-            </div>
-        </body>
-        </html>''')
+        f.write(f'''<!DOCTYPE html><html lang="zh-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"><title>監控</title></head><body class="bg-light py-5"><div class="container" style="max-width:850px;"><h2 class="text-center mb-4">📈 趨勢波段監控儀表板</h2>{"".join([i['html'] for i in all_data_list])}<p class="text-center text-muted mt-4 small">最後更新: {today_str}</p></div></body></html>''')
 
 if __name__ == "__main__":
     main()
