@@ -9,13 +9,11 @@ SHEET_ID = "17stsDM0pLhb_oVvqEaTufVrd00HXa6NwlRSNVYStBkE"
 SHEET_URL = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/export?format=csv"
 
 def main():
-    # 取得台北時間
     today_dt = datetime.datetime.now() + datetime.timedelta(hours=8)
     today_date = today_dt.date()
     today_str = today_dt.strftime("%Y-%m-%d %H:%M")
     session = requests.Session()
     
-    print("正在下載雲端試算表...")
     try:
         response = session.get(SHEET_URL)
         df = pd.read_csv(io.StringIO(response.text))
@@ -27,8 +25,7 @@ def main():
     tickers_list = df['Ticker'].dropna().astype(str).str.strip().tolist()
     data = yf.download(tickers_list, period="150d", group_by='ticker', progress=False)
 
-    hold_cards = ""    
-    watch_cards = ""   
+    all_data_list = [] # 用來存放所有處理完的資料
 
     # --- TradingView 模板 ---
     tv_template = """
@@ -50,43 +47,33 @@ def main():
             ma_len = str(int(row.get('MA', 20)))
             note = str(row.get('Note', '')) if pd.notnull(row.get('Note')) else ""
             
-            # --- 財報日邏輯：全面過濾舊日期 ---
+            # --- 財報日邏輯 ---
             e_day = "N/A"
             border_style = "border: none;" 
-            
-            # A. 嘗試從 Yahoo 自動抓取並過濾
             try:
                 t_obj = yf.Ticker(symbol)
                 cal = t_obj.calendar
                 if cal is not None and not cal.empty and 'Earnings Date' in cal.index:
                     raw_e_dt = cal.loc['Earnings Date'].iloc[0].date()
-                    if raw_e_dt >= today_date: # 只拿今天或以後的
-                        e_day = raw_e_dt.strftime('%Y-%m-%d')
-            except: 
-                e_day = "N/A"
+                    if raw_e_dt >= today_date: e_day = raw_e_dt.strftime('%Y-%m-%d')
+            except: e_day = "N/A"
 
-            # B. 如果 Yahoo 沒抓到（或不符標記），嘗試讀取試算表並「再次過濾」
             if e_day == "N/A":
                 e_val = row.get('Earnings', '')
                 if pd.notnull(e_val) and str(e_val).strip().lower() != 'nan':
-                    sheet_date_str = str(e_val).strip()
                     try:
-                        sheet_dt = datetime.datetime.strptime(sheet_date_str, '%Y-%m-%d').date()
-                        if sheet_dt >= today_date: # 試算表的日期也要比今天新
-                            e_day = sheet_date_str
-                    except:
-                        pass # 格式不對就維持 N/A
+                        sheet_dt = datetime.datetime.strptime(str(e_val).strip(), '%Y-%m-%d').date()
+                        if sheet_dt >= today_date: e_day = str(e_val).strip()
+                    except: pass
 
-            # C. 財報預警 (只對有效的 e_day 進行判定)
             if e_day != "N/A":
                 try:
-                    target_dt = datetime.datetime.strptime(e_day, '%Y-%m-%d').date()
-                    delta = (target_dt - today_date).days
+                    delta = (datetime.datetime.strptime(e_day, '%Y-%m-%d').date() - today_date).days
                     if 0 <= delta <= 7:
                         border_style = "border: 4px solid #dc3545; box-shadow: 0 0 15px rgba(220,53,69,0.4);"
                 except: pass
 
-            # --- 價格運算 ---
+            # --- 數據運算 ---
             s_data = data[symbol].dropna() if len(tickers_list) > 1 else data.dropna()
             if s_data.empty: continue
             
@@ -94,28 +81,38 @@ def main():
             ma_val = s_data['Close'].rolling(int(ma_len)).mean().iloc[-1]
             diff = (price / ma_val) - 1
             
+            # 符合條件則存入列表
             if is_hold or abs(diff) <= 0.01:
+                # 生成卡片 HTML
                 bg = "bg-dark" if is_hold else "bg-primary"
                 d_color = "text-danger" if diff < 0 else "text-success"
                 
-                card = '<div class="card mb-4 shadow" style="' + border_style + '">'
-                card += '<div class="card-header ' + bg + ' text-white d-flex justify-content-between">'
-                card += '<span>' + symbol + ' <b style="color:#ffc107;">' + (note if is_hold else "") + '</b></span>'
-                card += '<small>財報日: ' + e_day + '</small></div>'
-                card += '<div class="card-body"><p><b>' + ma_len + 'MA 偏離:</b> '
-                card += '<span class="' + d_color + '" style="font-weight:bold;">' + "{:.2f}%".format(diff*100) + '</span> | '
-                card += '<b>價格:</b> $' + "{:.2f}".format(price) + '</p>'
+                card_html = '<div class="card mb-4 shadow" style="' + border_style + '">'
+                card_html += '<div class="card-header ' + bg + ' text-white d-flex justify-content-between">'
+                card_html += '<span>' + symbol + ' <b style="color:#ffc107;">' + (note if is_hold else "") + '</b></span>'
+                card_html += '<small>財報日: ' + e_day + '</small></div>'
+                card_html += '<div class="card-body"><p><b>' + ma_len + 'MA 偏離:</b> '
+                card_html += '<span class="' + d_color + '" style="font-weight:bold;">' + "{:.2f}%".format(diff*100) + '</span> | '
+                card_html += '<b>價格:</b> $' + "{:.2f}".format(price) + '</p>'
                 
                 current_tv = tv_template.replace("SYMBOL_PLACEHOLDER", symbol).replace("MA_LEN_PLACEHOLDER", ma_len)
-                card += current_tv
-                card += '</div></div>'
-                
-                if is_hold: hold_cards += card
-                else: watch_cards += card
+                card_html += current_tv
+                card_html += '</div></div>'
+
+                # 把資料存成字典，方便排序
+                all_data_list.append({
+                    'is_hold': is_hold,
+                    'diff': diff,
+                    'html': card_html
+                })
         except: continue
 
-    # 組合頁面
-    final_content = hold_cards + watch_cards
+    # --- 關鍵：雙重排序 ---
+    # 先依照 is_hold 排序 (True 在前)，再依照 diff 排序 (由大到小)
+    all_data_list.sort(key=lambda x: (not x['is_hold'], -x['diff']))
+
+    final_content = "".join([item['html'] for item in all_data_list])
+    
     page = '<!DOCTYPE html><html lang="zh-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
     page += '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"></head>'
     page += '<body class="bg-light py-5"><div class="container" style="max-width:800px;">'
