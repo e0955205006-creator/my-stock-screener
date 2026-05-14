@@ -4,18 +4,22 @@ import datetime
 import requests
 import io
 
-# 1. 配置
+# 1. 基本配置
 SHEET_ID = "17stsDM0pLhb_oVvqEaTufVrd00HXa6NwlRSNVYStBkE"
 SHEET_URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv"
 
 def backtest_strategy(df_history, ma_series):
-    """執行買賣策略回測並計算報酬與勝率"""
+    """執行買賣策略回測（包含交易手續費考量）"""
     total_return = 0.0
     trades_count = 0
     success_trades = 0
     in_position = False
-    buy_price = 0.0
+    buy_price_raw = 0.0
     buy_day_index = -1
+    
+    # 費率設定
+    fee_buy_rate = 0.0008          # 0.08%
+    fee_sell_rate = 0.0008206      # 0.08% + 0.00206%
     
     start_idx = ma_series.first_valid_index()
     if start_idx is None: return -999, 0, 0
@@ -32,20 +36,30 @@ def backtest_strategy(df_history, ma_series):
         trigger_buy = ma * 1.015
         
         if not in_position:
+            # 觸發買入條件
             if high > trigger_buy and low <= trigger_buy:
-                buy_price = trigger_buy
+                buy_price_raw = trigger_buy
                 in_position = True
                 buy_day_index = i
+                # 若當天收盤直接破 MA，則隔天開盤賣（邏輯由下方 else 處理）
                 if close < ma: continue
         else:
-            exit_price = None
+            exit_price_raw = None
+            # 條件：買入隔天開盤賣 (若買入當天收盤已破 MA)
             if i == buy_day_index + 1 and subset['Close'].iloc[i-1] < ma_subset.iloc[i-1]:
-                exit_price = open_p
+                exit_price_raw = open_p
+            # 條件：收盤跌破 MA 賣出
             elif close < ma:
-                exit_price = close
+                exit_price_raw = close
             
-            if exit_price is not None:
-                trade_ret = (exit_price / buy_price) - 1
+            if exit_price_raw is not None:
+                # 考慮手續費後的報酬率計算
+                # 總成本 = 買入價 * (1 + 買入手續費)
+                # 實拿價 = 賣出價 * (1 - 賣出手續費)
+                cost = buy_price_raw * (1 + fee_buy_rate)
+                proceeds = exit_price_raw * (1 - fee_sell_rate)
+                
+                trade_ret = (proceeds / cost) - 1
                 total_return += trade_ret
                 trades_count += 1
                 if trade_ret > 0: success_trades += 1
@@ -55,7 +69,7 @@ def backtest_strategy(df_history, ma_series):
     return total_return * 100, win_rate, trades_count
 
 def find_best_ma(s_data):
-    """從 15MA 到 35MA 尋找報酬率最高的週期"""
+    """從 15MA 到 35MA 尋找扣除手續費後報酬率最高的週期"""
     best_ret = -float('inf')
     best_res = (20, 0, 0, 0)
     for ma_len in range(15, 36):
@@ -67,7 +81,7 @@ def find_best_ma(s_data):
     return best_res
 
 def main():
-    # 今日日期與時區處理
+    # 處理今天日期與時區
     today_dt = datetime.datetime.now() + datetime.timedelta(hours=8)
     today_str = today_dt.strftime("%Y-%m-%d %H:%M")
     
@@ -93,14 +107,15 @@ def main():
             s_data = data[symbol].dropna() if len(tickers_list) > 1 else data.dropna()
             if s_data.empty: continue
             
-            # --- 1. 自動尋找 15-35 最佳 MA ---
+            # 1. 尋找最佳 MA (已含手續費計算)
             best_ma, ret, win_rate, count = find_best_ma(s_data)
             
+            # 2. 偏離度與篩選
             current_price = s_data['Close'].iloc[-1]
             current_ma = s_data['Close'].rolling(best_ma).mean().iloc[-1]
             diff = (current_price / current_ma) - 1
             
-            # --- 2. 財報日判定 (API優先 -> 工作表備援) ---
+            # 3. 財報判定
             e_day_obj = None
             e_day_str = "N/A"
             try:
@@ -108,8 +123,8 @@ def main():
                 cal = t_obj.calendar
                 if cal is not None and not cal.empty and 'Earnings Date' in cal.index:
                     raw_e = cal.loc['Earnings Date'].iloc[0]
-                    if hasattr(raw_e, 'date'): raw_e = raw_e.date()
-                    if raw_e >= today_dt.date(): e_day_obj = raw_e
+                    if hasattr(raw_e, 'date') and raw_e.date() >= today_dt.date():
+                        e_day_obj = raw_e.date()
             except: pass
 
             if e_day_obj is None:
@@ -121,17 +136,15 @@ def main():
                     except: pass
             
             if e_day_obj: e_day_str = e_day_obj.strftime('%Y-%m-%d')
-
-            # --- 3. 視覺警示判定 ---
             is_earning_soon = False
             if e_day_obj:
                 days_diff = (e_day_obj - today_dt.date()).days
                 if 0 <= days_diff <= 7: is_earning_soon = True
 
-            # --- 4. 篩選與 HTML 生成 ---
+            # 4. 篩選：持股 或 MA 正負 1%
             if is_hold or abs(diff) <= 0.01:
                 bg = "bg-dark" if is_hold else "bg-primary"
-                card_style = "border: 5px solid #dc3545; box-shadow: 0 0 15px rgba(220,53,69,0.3);" if is_earning_soon else ""
+                card_style = "border: 5px solid #dc3545;" if is_earning_soon else ""
                 
                 card_html = f'''
                 <div class="card mb-4 shadow" style="{card_style}">
@@ -141,7 +154,7 @@ def main():
                             {f'<span class="badge bg-danger ms-2">⚠️ 財報週</span>' if is_earning_soon else ''}
                         </div>
                         <div class="text-end">
-                            <small style="color:{'#90ee90' if ret > 0 else '#ffcccb'}; font-weight:bold;">3Y最佳報酬: {ret:+.1f}%</small><br>
+                            <small style="color:{'#90ee90' if ret > 0 else '#ffcccb'}; font-weight:bold;">3Y淨報酬: {ret:+.1f}%</small><br>
                             <small style="opacity:0.8;">勝率: {win_rate:.1f}% ({count}次)</small>
                         </div>
                     </div>
@@ -149,7 +162,6 @@ def main():
                         <p class="mb-3">
                             <b>{best_ma}MA 偏離:</b> {diff*100:.2f}% | <b>現價:</b> ${current_price:.2f} | 
                             <b>財報日:</b> <span class="badge {'bg-danger' if is_earning_soon else 'bg-warning text-dark'}">{e_day_str}</span>
-                            {f'<br><small class="text-muted">備註: {note}</small>' if note else ''}
                         </p>
                         <div id="tv_{symbol}" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
@@ -163,21 +175,14 @@ def main():
                         </script>
                     </div>
                 </div>'''
-                # 紀錄資料以便後續排序
-                all_data_list.append({
-                    'is_hold': is_hold, 
-                    'ret': ret, 
-                    'html': card_html
-                })
+                all_data_list.append({'is_hold': is_hold, 'ret': ret, 'html': card_html})
         except: continue
 
-    # --- 關鍵修正：排序邏輯 ---
-    # 先按 is_hold 排序 (True=1, False=0，所以加負號讓 True 在前)
-    # 再按 ret (報酬率) 排序 (由大到小，所以加負號)
+    # 排序：持股優先 -> 淨報酬率由高到低
     all_data_list.sort(key=lambda x: (not x['is_hold'], -x['ret']))
     
     with open("index.html", "w", encoding="utf-8") as f:
-        f.write(f'''<!DOCTYPE html><html lang="zh-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"><title>策略排序監控</title></head><body class="bg-light py-5"><div class="container" style="max-width:850px;"><h2 class="text-center mb-4">📈 最佳 MA 策略監控 (依報酬排序)</h2>{"".join([i['html'] for i in all_data_list])}<p class="text-center text-muted mt-4 small">最後更新: {today_str}</p></div></body></html>''')
+        f.write(f'''<!DOCTYPE html><html lang="zh-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"><title>策略監控</title></head><body class="bg-light py-5"><div class="container" style="max-width:850px;"><h2 class="text-center mb-4">📈 MA 策略監控 (含手續費回測)</h2>{"".join([i['html'] for i in all_data_list])}<p class="text-center text-muted mt-4 small">最後更新: {today_str}</p></div></body></html>''')
 
 if __name__ == "__main__":
     main()
