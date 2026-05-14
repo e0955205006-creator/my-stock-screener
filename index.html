@@ -1,20 +1,19 @@
-<!DOCTYPE html><html lang="zh-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"><title>策略排序監控</title></head><body class="bg-light py-5"><div class="container" style="max-width:850px;"><h2 class="text-center mb-4">📈 最佳 MA 策略監控 (依報酬排序)</h2>
-                <div class="card mb-4 shadow" style="border: 5px solid #dc3545; box-shadow: 0 0 15px rgba(220,53,69,0.3);">
+<!DOCTYPE html><html lang="zh-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"><title>策略監控</title></head><body class="bg-light py-5"><div class="container" style="max-width:850px;"><h2 class="text-center mb-4">📈 MA 策略監控 (含手續費回測)</h2>
+                <div class="card mb-4 shadow" style="border: 5px solid #dc3545;">
                     <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                         <div>
                             GOOGL <span class="badge bg-light text-dark ms-2">專屬 33MA</span>
                             <span class="badge bg-danger ms-2">⚠️ 財報週</span>
                         </div>
                         <div class="text-end">
-                            <small style="color:#90ee90; font-weight:bold;">3Y最佳報酬: +90.0%</small><br>
+                            <small style="color:#90ee90; font-weight:bold;">3Y淨報酬: +87.1%</small><br>
                             <small style="opacity:0.8;">勝率: 58.8% (17次)</small>
                         </div>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
-                            <b>33MA 偏離:</b> 13.75% | <b>現價:</b> $385.80 | 
+                            <b>33MA 偏離:</b> 15.06% | <b>現價:</b> $398.89 | 
                             <b>財報日:</b> <span class="badge bg-danger">2026-05-15</span>
-                            
                         </p>
                         <div id="tv_GOOGL" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
@@ -29,30 +28,29 @@
                     </div>
                 </div>
                 <div class="card mb-4 shadow" style="">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                         <div>
-                            CACI <span class="badge bg-light text-dark ms-2">專屬 17MA</span>
+                            ADBE <span class="badge bg-light text-dark ms-2">專屬 21MA</span>
                             
                         </div>
                         <div class="text-end">
-                            <small style="color:#90ee90; font-weight:bold;">3Y最佳報酬: +85.7%</small><br>
-                            <small style="opacity:0.8;">勝率: 43.3% (30次)</small>
+                            <small style="color:#ffcccb; font-weight:bold;">3Y淨報酬: -45.1%</small><br>
+                            <small style="opacity:0.8;">勝率: 20.0% (30次)</small>
                         </div>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
-                            <b>17MA 偏離:</b> 0.44% | <b>現價:</b> $508.81 | 
+                            <b>21MA 偏離:</b> -4.32% | <b>現價:</b> $236.02 | 
                             <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
                         </p>
-                        <div id="tv_CACI" style="height:400px;"></div>
+                        <div id="tv_ADBE" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
                         <script>
                             new TradingView.widget({
-                                "autosize": true, "symbol": "CACI", "interval": "D", "theme": "light",
-                                "style": "1", "locale": "zh_TW", "container_id": "tv_CACI",
+                                "autosize": true, "symbol": "ADBE", "interval": "D", "theme": "light",
+                                "style": "1", "locale": "zh_TW", "container_id": "tv_ADBE",
                                 "hide_top_toolbar": true, "hide_side_toolbar": true,
-                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 17 } }]
+                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 21 } }]
                             });
                         </script>
                     </div>
@@ -64,15 +62,14 @@
                             
                         </div>
                         <div class="text-end">
-                            <small style="color:#90ee90; font-weight:bold;">3Y最佳報酬: +82.2%</small><br>
+                            <small style="color:#90ee90; font-weight:bold;">3Y淨報酬: +77.8%</small><br>
                             <small style="opacity:0.8;">勝率: 27.3% (22次)</small>
                         </div>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
-                            <b>30MA 偏離:</b> -0.20% | <b>現價:</b> $285.06 | 
+                            <b>30MA 偏離:</b> 0.44% | <b>現價:</b> $287.14 | 
                             <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
                         </p>
                         <div id="tv_AYI" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
@@ -89,28 +86,27 @@
                 <div class="card mb-4 shadow" style="">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <div>
-                            CW <span class="badge bg-light text-dark ms-2">專屬 22MA</span>
+                            CACI <span class="badge bg-light text-dark ms-2">專屬 16MA</span>
                             
                         </div>
                         <div class="text-end">
-                            <small style="color:#90ee90; font-weight:bold;">3Y最佳報酬: +81.3%</small><br>
-                            <small style="opacity:0.8;">勝率: 35.3% (34次)</small>
+                            <small style="color:#90ee90; font-weight:bold;">3Y淨報酬: +77.7%</small><br>
+                            <small style="opacity:0.8;">勝率: 40.6% (32次)</small>
                         </div>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
-                            <b>22MA 偏離:</b> -0.47% | <b>現價:</b> $719.93 | 
+                            <b>16MA 偏離:</b> 0.44% | <b>現價:</b> $505.88 | 
                             <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
                         </p>
-                        <div id="tv_CW" style="height:400px;"></div>
+                        <div id="tv_CACI" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
                         <script>
                             new TradingView.widget({
-                                "autosize": true, "symbol": "CW", "interval": "D", "theme": "light",
-                                "style": "1", "locale": "zh_TW", "container_id": "tv_CW",
+                                "autosize": true, "symbol": "CACI", "interval": "D", "theme": "light",
+                                "style": "1", "locale": "zh_TW", "container_id": "tv_CACI",
                                 "hide_top_toolbar": true, "hide_side_toolbar": true,
-                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 22 } }]
+                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 16 } }]
                             });
                         </script>
                     </div>
@@ -118,28 +114,167 @@
                 <div class="card mb-4 shadow" style="">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <div>
-                            AEP <span class="badge bg-light text-dark ms-2">專屬 32MA</span>
+                            MMM <span class="badge bg-light text-dark ms-2">專屬 18MA</span>
                             
                         </div>
                         <div class="text-end">
-                            <small style="color:#90ee90; font-weight:bold;">3Y最佳報酬: +51.6%</small><br>
-                            <small style="opacity:0.8;">勝率: 47.1% (17次)</small>
+                            <small style="color:#90ee90; font-weight:bold;">3Y淨報酬: +62.1%</small><br>
+                            <small style="opacity:0.8;">勝率: 45.2% (31次)</small>
                         </div>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
-                            <b>32MA 偏離:</b> -0.78% | <b>現價:</b> $131.74 | 
+                            <b>18MA 偏離:</b> 0.54% | <b>現價:</b> $145.62 | 
                             <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
                         </p>
-                        <div id="tv_AEP" style="height:400px;"></div>
+                        <div id="tv_MMM" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
                         <script>
                             new TradingView.widget({
-                                "autosize": true, "symbol": "AEP", "interval": "D", "theme": "light",
-                                "style": "1", "locale": "zh_TW", "container_id": "tv_AEP",
+                                "autosize": true, "symbol": "MMM", "interval": "D", "theme": "light",
+                                "style": "1", "locale": "zh_TW", "container_id": "tv_MMM",
                                 "hide_top_toolbar": true, "hide_side_toolbar": true,
-                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 32 } }]
+                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 18 } }]
+                            });
+                        </script>
+                    </div>
+                </div>
+                <div class="card mb-4 shadow" style="">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <div>
+                            AGM <span class="badge bg-light text-dark ms-2">專屬 15MA</span>
+                            
+                        </div>
+                        <div class="text-end">
+                            <small style="color:#90ee90; font-weight:bold;">3Y淨報酬: +56.2%</small><br>
+                            <small style="opacity:0.8;">勝率: 41.0% (39次)</small>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-3">
+                            <b>15MA 偏離:</b> 0.46% | <b>現價:</b> $176.23 | 
+                            <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
+                        </p>
+                        <div id="tv_AGM" style="height:400px;"></div>
+                        <script src="https://s3.tradingview.com/tv.js"></script>
+                        <script>
+                            new TradingView.widget({
+                                "autosize": true, "symbol": "AGM", "interval": "D", "theme": "light",
+                                "style": "1", "locale": "zh_TW", "container_id": "tv_AGM",
+                                "hide_top_toolbar": true, "hide_side_toolbar": true,
+                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 15 } }]
+                            });
+                        </script>
+                    </div>
+                </div>
+                <div class="card mb-4 shadow" style="">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <div>
+                            ETN <span class="badge bg-light text-dark ms-2">專屬 28MA</span>
+                            
+                        </div>
+                        <div class="text-end">
+                            <small style="color:#90ee90; font-weight:bold;">3Y淨報酬: +55.0%</small><br>
+                            <small style="opacity:0.8;">勝率: 45.5% (22次)</small>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-3">
+                            <b>28MA 偏離:</b> -0.14% | <b>現價:</b> $406.53 | 
+                            <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
+                        </p>
+                        <div id="tv_ETN" style="height:400px;"></div>
+                        <script src="https://s3.tradingview.com/tv.js"></script>
+                        <script>
+                            new TradingView.widget({
+                                "autosize": true, "symbol": "ETN", "interval": "D", "theme": "light",
+                                "style": "1", "locale": "zh_TW", "container_id": "tv_ETN",
+                                "hide_top_toolbar": true, "hide_side_toolbar": true,
+                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 28 } }]
+                            });
+                        </script>
+                    </div>
+                </div>
+                <div class="card mb-4 shadow" style="">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <div>
+                            HCA <span class="badge bg-light text-dark ms-2">專屬 15MA</span>
+                            
+                        </div>
+                        <div class="text-end">
+                            <small style="color:#90ee90; font-weight:bold;">3Y淨報酬: +53.4%</small><br>
+                            <small style="opacity:0.8;">勝率: 38.7% (31次)</small>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-3">
+                            <b>15MA 偏離:</b> -0.01% | <b>現價:</b> $431.78 | 
+                            <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
+                        </p>
+                        <div id="tv_HCA" style="height:400px;"></div>
+                        <script src="https://s3.tradingview.com/tv.js"></script>
+                        <script>
+                            new TradingView.widget({
+                                "autosize": true, "symbol": "HCA", "interval": "D", "theme": "light",
+                                "style": "1", "locale": "zh_TW", "container_id": "tv_HCA",
+                                "hide_top_toolbar": true, "hide_side_toolbar": true,
+                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 15 } }]
+                            });
+                        </script>
+                    </div>
+                </div>
+                <div class="card mb-4 shadow" style="">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <div>
+                            JNJ <span class="badge bg-light text-dark ms-2">專屬 26MA</span>
+                            
+                        </div>
+                        <div class="text-end">
+                            <small style="color:#90ee90; font-weight:bold;">3Y淨報酬: +51.4%</small><br>
+                            <small style="opacity:0.8;">勝率: 56.2% (16次)</small>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-3">
+                            <b>26MA 偏離:</b> 0.22% | <b>現價:</b> $230.06 | 
+                            <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
+                        </p>
+                        <div id="tv_JNJ" style="height:400px;"></div>
+                        <script src="https://s3.tradingview.com/tv.js"></script>
+                        <script>
+                            new TradingView.widget({
+                                "autosize": true, "symbol": "JNJ", "interval": "D", "theme": "light",
+                                "style": "1", "locale": "zh_TW", "container_id": "tv_JNJ",
+                                "hide_top_toolbar": true, "hide_side_toolbar": true,
+                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 26 } }]
+                            });
+                        </script>
+                    </div>
+                </div>
+                <div class="card mb-4 shadow" style="">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <div>
+                            SSD <span class="badge bg-light text-dark ms-2">專屬 15MA</span>
+                            
+                        </div>
+                        <div class="text-end">
+                            <small style="color:#90ee90; font-weight:bold;">3Y淨報酬: +48.6%</small><br>
+                            <small style="opacity:0.8;">勝率: 30.2% (43次)</small>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-3">
+                            <b>15MA 偏離:</b> -0.85% | <b>現價:</b> $186.66 | 
+                            <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
+                        </p>
+                        <div id="tv_SSD" style="height:400px;"></div>
+                        <script src="https://s3.tradingview.com/tv.js"></script>
+                        <script>
+                            new TradingView.widget({
+                                "autosize": true, "symbol": "SSD", "interval": "D", "theme": "light",
+                                "style": "1", "locale": "zh_TW", "container_id": "tv_SSD",
+                                "hide_top_toolbar": true, "hide_side_toolbar": true,
+                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 15 } }]
                             });
                         </script>
                     </div>
@@ -151,15 +286,14 @@
                             
                         </div>
                         <div class="text-end">
-                            <small style="color:#90ee90; font-weight:bold;">3Y最佳報酬: +41.6%</small><br>
-                            <small style="opacity:0.8;">勝率: 50.0% (20次)</small>
+                            <small style="color:#90ee90; font-weight:bold;">3Y淨報酬: +38.3%</small><br>
+                            <small style="opacity:0.8;">勝率: 40.0% (20次)</small>
                         </div>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
-                            <b>32MA 偏離:</b> 0.53% | <b>現價:</b> $80.68 | 
+                            <b>32MA 偏離:</b> 0.53% | <b>現價:</b> $80.69 | 
                             <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
                         </p>
                         <div id="tv_CSGS" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
@@ -180,15 +314,14 @@
                             
                         </div>
                         <div class="text-end">
-                            <small style="color:#90ee90; font-weight:bold;">3Y最佳報酬: +39.3%</small><br>
+                            <small style="color:#90ee90; font-weight:bold;">3Y淨報酬: +34.4%</small><br>
                             <small style="opacity:0.8;">勝率: 40.7% (27次)</small>
                         </div>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
-                            <b>32MA 偏離:</b> -0.72% | <b>現價:</b> $46.95 | 
+                            <b>32MA 偏離:</b> 0.64% | <b>現價:</b> $47.71 | 
                             <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
                         </p>
                         <div id="tv_MLR" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
@@ -205,28 +338,27 @@
                 <div class="card mb-4 shadow" style="">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <div>
-                            AMCX <span class="badge bg-light text-dark ms-2">專屬 27MA</span>
+                            IEX <span class="badge bg-light text-dark ms-2">專屬 26MA</span>
                             
                         </div>
                         <div class="text-end">
-                            <small style="color:#90ee90; font-weight:bold;">3Y最佳報酬: +32.8%</small><br>
-                            <small style="opacity:0.8;">勝率: 20.5% (39次)</small>
+                            <small style="color:#90ee90; font-weight:bold;">3Y淨報酬: +27.5%</small><br>
+                            <small style="opacity:0.8;">勝率: 50.0% (16次)</small>
                         </div>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
-                            <b>27MA 偏離:</b> -0.60% | <b>現價:</b> $8.17 | 
+                            <b>26MA 偏離:</b> 0.59% | <b>現價:</b> $210.33 | 
                             <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
                         </p>
-                        <div id="tv_AMCX" style="height:400px;"></div>
+                        <div id="tv_IEX" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
                         <script>
                             new TradingView.widget({
-                                "autosize": true, "symbol": "AMCX", "interval": "D", "theme": "light",
-                                "style": "1", "locale": "zh_TW", "container_id": "tv_AMCX",
+                                "autosize": true, "symbol": "IEX", "interval": "D", "theme": "light",
+                                "style": "1", "locale": "zh_TW", "container_id": "tv_IEX",
                                 "hide_top_toolbar": true, "hide_side_toolbar": true,
-                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 27 } }]
+                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 26 } }]
                             });
                         </script>
                     </div>
@@ -238,15 +370,14 @@
                             
                         </div>
                         <div class="text-end">
-                            <small style="color:#90ee90; font-weight:bold;">3Y最佳報酬: +29.2%</small><br>
+                            <small style="color:#90ee90; font-weight:bold;">3Y淨報酬: +23.8%</small><br>
                             <small style="opacity:0.8;">勝率: 36.4% (33次)</small>
                         </div>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
-                            <b>15MA 偏離:</b> -0.20% | <b>現價:</b> $264.80 | 
+                            <b>15MA 偏離:</b> 0.06% | <b>現價:</b> $266.22 | 
                             <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
                         </p>
                         <div id="tv_UNP" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
@@ -263,57 +394,27 @@
                 <div class="card mb-4 shadow" style="">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <div>
-                            SAIC <span class="badge bg-light text-dark ms-2">專屬 15MA</span>
+                            EVRG <span class="badge bg-light text-dark ms-2">專屬 17MA</span>
                             
                         </div>
                         <div class="text-end">
-                            <small style="color:#90ee90; font-weight:bold;">3Y最佳報酬: +27.8%</small><br>
-                            <small style="opacity:0.8;">勝率: 42.9% (35次)</small>
+                            <small style="color:#90ee90; font-weight:bold;">3Y淨報酬: +17.4%</small><br>
+                            <small style="opacity:0.8;">勝率: 41.4% (29次)</small>
                         </div>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
-                            <b>15MA 偏離:</b> -0.17% | <b>現價:</b> $94.87 | 
+                            <b>17MA 偏離:</b> 0.73% | <b>現價:</b> $82.60 | 
                             <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
                         </p>
-                        <div id="tv_SAIC" style="height:400px;"></div>
+                        <div id="tv_EVRG" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
                         <script>
                             new TradingView.widget({
-                                "autosize": true, "symbol": "SAIC", "interval": "D", "theme": "light",
-                                "style": "1", "locale": "zh_TW", "container_id": "tv_SAIC",
+                                "autosize": true, "symbol": "EVRG", "interval": "D", "theme": "light",
+                                "style": "1", "locale": "zh_TW", "container_id": "tv_EVRG",
                                 "hide_top_toolbar": true, "hide_side_toolbar": true,
-                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 15 } }]
-                            });
-                        </script>
-                    </div>
-                </div>
-                <div class="card mb-4 shadow" style="">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <div>
-                            MA <span class="badge bg-light text-dark ms-2">專屬 31MA</span>
-                            
-                        </div>
-                        <div class="text-end">
-                            <small style="color:#90ee90; font-weight:bold;">3Y最佳報酬: +27.4%</small><br>
-                            <small style="opacity:0.8;">勝率: 47.1% (17次)</small>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p class="mb-3">
-                            <b>31MA 偏離:</b> 0.29% | <b>現價:</b> $505.96 | 
-                            <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
-                        </p>
-                        <div id="tv_MA" style="height:400px;"></div>
-                        <script src="https://s3.tradingview.com/tv.js"></script>
-                        <script>
-                            new TradingView.widget({
-                                "autosize": true, "symbol": "MA", "interval": "D", "theme": "light",
-                                "style": "1", "locale": "zh_TW", "container_id": "tv_MA",
-                                "hide_top_toolbar": true, "hide_side_toolbar": true,
-                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 31 } }]
+                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 17 } }]
                             });
                         </script>
                     </div>
@@ -325,15 +426,14 @@
                             
                         </div>
                         <div class="text-end">
-                            <small style="color:#90ee90; font-weight:bold;">3Y最佳報酬: +25.8%</small><br>
-                            <small style="opacity:0.8;">勝率: 38.5% (39次)</small>
+                            <small style="color:#90ee90; font-weight:bold;">3Y淨報酬: +16.4%</small><br>
+                            <small style="opacity:0.8;">勝率: 37.5% (40次)</small>
                         </div>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
-                            <b>15MA 偏離:</b> 0.38% | <b>現價:</b> $64.95 | 
+                            <b>15MA 偏離:</b> -0.37% | <b>現價:</b> $64.08 | 
                             <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
                         </p>
                         <div id="tv_CNXN" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
@@ -350,55 +450,25 @@
                 <div class="card mb-4 shadow" style="">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <div>
-                            TREX <span class="badge bg-light text-dark ms-2">專屬 33MA</span>
+                            VZ <span class="badge bg-light text-dark ms-2">專屬 16MA</span>
                             
                         </div>
                         <div class="text-end">
-                            <small style="color:#90ee90; font-weight:bold;">3Y最佳報酬: +24.0%</small><br>
-                            <small style="opacity:0.8;">勝率: 28.6% (28次)</small>
+                            <small style="color:#90ee90; font-weight:bold;">3Y淨報酬: +14.1%</small><br>
+                            <small style="opacity:0.8;">勝率: 24.2% (33次)</small>
                         </div>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
-                            <b>33MA 偏離:</b> -0.46% | <b>現價:</b> $39.05 | 
+                            <b>16MA 偏離:</b> -0.36% | <b>現價:</b> $47.13 | 
                             <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
                         </p>
-                        <div id="tv_TREX" style="height:400px;"></div>
+                        <div id="tv_VZ" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
                         <script>
                             new TradingView.widget({
-                                "autosize": true, "symbol": "TREX", "interval": "D", "theme": "light",
-                                "style": "1", "locale": "zh_TW", "container_id": "tv_TREX",
-                                "hide_top_toolbar": true, "hide_side_toolbar": true,
-                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 33 } }]
-                            });
-                        </script>
-                    </div>
-                </div>
-                <div class="card mb-4 shadow" style="">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <div>
-                            IDA <span class="badge bg-light text-dark ms-2">專屬 16MA</span>
-                            
-                        </div>
-                        <div class="text-end">
-                            <small style="color:#90ee90; font-weight:bold;">3Y最佳報酬: +19.0%</small><br>
-                            <small style="opacity:0.8;">勝率: 33.3% (33次)</small>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p class="mb-3">
-                            <b>16MA 偏離:</b> -0.77% | <b>現價:</b> $143.67 | 
-                            <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
-                        </p>
-                        <div id="tv_IDA" style="height:400px;"></div>
-                        <script src="https://s3.tradingview.com/tv.js"></script>
-                        <script>
-                            new TradingView.widget({
-                                "autosize": true, "symbol": "IDA", "interval": "D", "theme": "light",
-                                "style": "1", "locale": "zh_TW", "container_id": "tv_IDA",
+                                "autosize": true, "symbol": "VZ", "interval": "D", "theme": "light",
+                                "style": "1", "locale": "zh_TW", "container_id": "tv_VZ",
                                 "hide_top_toolbar": true, "hide_side_toolbar": true,
                                 "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 16 } }]
                             });
@@ -412,15 +482,14 @@
                             
                         </div>
                         <div class="text-end">
-                            <small style="color:#90ee90; font-weight:bold;">3Y最佳報酬: +18.4%</small><br>
-                            <small style="opacity:0.8;">勝率: 30.0% (30次)</small>
+                            <small style="color:#90ee90; font-weight:bold;">3Y淨報酬: +11.7%</small><br>
+                            <small style="opacity:0.8;">勝率: 29.0% (31次)</small>
                         </div>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
-                            <b>20MA 偏離:</b> -0.03% | <b>現價:</b> $257.11 | 
+                            <b>20MA 偏離:</b> 0.27% | <b>現價:</b> $257.46 | 
                             <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
                         </p>
                         <div id="tv_UNF" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
@@ -437,28 +506,139 @@
                 <div class="card mb-4 shadow" style="">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <div>
-                            TTC <span class="badge bg-light text-dark ms-2">專屬 19MA</span>
+                            AME <span class="badge bg-light text-dark ms-2">專屬 16MA</span>
                             
                         </div>
                         <div class="text-end">
-                            <small style="color:#90ee90; font-weight:bold;">3Y最佳報酬: +7.3%</small><br>
-                            <small style="opacity:0.8;">勝率: 26.5% (34次)</small>
+                            <small style="color:#90ee90; font-weight:bold;">3Y淨報酬: +10.4%</small><br>
+                            <small style="opacity:0.8;">勝率: 20.0% (30次)</small>
                         </div>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
-                            <b>19MA 偏離:</b> -0.18% | <b>現價:</b> $94.42 | 
+                            <b>16MA 偏離:</b> -0.71% | <b>現價:</b> $231.04 | 
                             <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
                         </p>
-                        <div id="tv_TTC" style="height:400px;"></div>
+                        <div id="tv_AME" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
                         <script>
                             new TradingView.widget({
-                                "autosize": true, "symbol": "TTC", "interval": "D", "theme": "light",
-                                "style": "1", "locale": "zh_TW", "container_id": "tv_TTC",
+                                "autosize": true, "symbol": "AME", "interval": "D", "theme": "light",
+                                "style": "1", "locale": "zh_TW", "container_id": "tv_AME",
                                 "hide_top_toolbar": true, "hide_side_toolbar": true,
-                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 19 } }]
+                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 16 } }]
+                            });
+                        </script>
+                    </div>
+                </div>
+                <div class="card mb-4 shadow" style="">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <div>
+                            GD <span class="badge bg-light text-dark ms-2">專屬 31MA</span>
+                            
+                        </div>
+                        <div class="text-end">
+                            <small style="color:#90ee90; font-weight:bold;">3Y淨報酬: +7.9%</small><br>
+                            <small style="opacity:0.8;">勝率: 26.9% (26次)</small>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-3">
+                            <b>31MA 偏離:</b> 0.80% | <b>現價:</b> $341.02 | 
+                            <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
+                        </p>
+                        <div id="tv_GD" style="height:400px;"></div>
+                        <script src="https://s3.tradingview.com/tv.js"></script>
+                        <script>
+                            new TradingView.widget({
+                                "autosize": true, "symbol": "GD", "interval": "D", "theme": "light",
+                                "style": "1", "locale": "zh_TW", "container_id": "tv_GD",
+                                "hide_top_toolbar": true, "hide_side_toolbar": true,
+                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 31 } }]
+                            });
+                        </script>
+                    </div>
+                </div>
+                <div class="card mb-4 shadow" style="">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <div>
+                            CHH <span class="badge bg-light text-dark ms-2">專屬 15MA</span>
+                            
+                        </div>
+                        <div class="text-end">
+                            <small style="color:#ffcccb; font-weight:bold;">3Y淨報酬: -0.2%</small><br>
+                            <small style="opacity:0.8;">勝率: 34.1% (41次)</small>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-3">
+                            <b>15MA 偏離:</b> -0.05% | <b>現價:</b> $107.88 | 
+                            <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
+                        </p>
+                        <div id="tv_CHH" style="height:400px;"></div>
+                        <script src="https://s3.tradingview.com/tv.js"></script>
+                        <script>
+                            new TradingView.widget({
+                                "autosize": true, "symbol": "CHH", "interval": "D", "theme": "light",
+                                "style": "1", "locale": "zh_TW", "container_id": "tv_CHH",
+                                "hide_top_toolbar": true, "hide_side_toolbar": true,
+                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 15 } }]
+                            });
+                        </script>
+                    </div>
+                </div>
+                <div class="card mb-4 shadow" style="">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <div>
+                            CHD <span class="badge bg-light text-dark ms-2">專屬 15MA</span>
+                            
+                        </div>
+                        <div class="text-end">
+                            <small style="color:#ffcccb; font-weight:bold;">3Y淨報酬: -0.2%</small><br>
+                            <small style="opacity:0.8;">勝率: 33.3% (30次)</small>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-3">
+                            <b>15MA 偏離:</b> 0.17% | <b>現價:</b> $94.80 | 
+                            <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
+                        </p>
+                        <div id="tv_CHD" style="height:400px;"></div>
+                        <script src="https://s3.tradingview.com/tv.js"></script>
+                        <script>
+                            new TradingView.widget({
+                                "autosize": true, "symbol": "CHD", "interval": "D", "theme": "light",
+                                "style": "1", "locale": "zh_TW", "container_id": "tv_CHD",
+                                "hide_top_toolbar": true, "hide_side_toolbar": true,
+                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 15 } }]
+                            });
+                        </script>
+                    </div>
+                </div>
+                <div class="card mb-4 shadow" style="">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <div>
+                            DRI <span class="badge bg-light text-dark ms-2">專屬 31MA</span>
+                            
+                        </div>
+                        <div class="text-end">
+                            <small style="color:#ffcccb; font-weight:bold;">3Y淨報酬: -0.2%</small><br>
+                            <small style="opacity:0.8;">勝率: 28.0% (25次)</small>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-3">
+                            <b>31MA 偏離:</b> -0.43% | <b>現價:</b> $195.44 | 
+                            <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
+                        </p>
+                        <div id="tv_DRI" style="height:400px;"></div>
+                        <script src="https://s3.tradingview.com/tv.js"></script>
+                        <script>
+                            new TradingView.widget({
+                                "autosize": true, "symbol": "DRI", "interval": "D", "theme": "light",
+                                "style": "1", "locale": "zh_TW", "container_id": "tv_DRI",
+                                "hide_top_toolbar": true, "hide_side_toolbar": true,
+                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 31 } }]
                             });
                         </script>
                     </div>
@@ -470,15 +650,14 @@
                             
                         </div>
                         <div class="text-end">
-                            <small style="color:#90ee90; font-weight:bold;">3Y最佳報酬: +4.9%</small><br>
-                            <small style="opacity:0.8;">勝率: 46.4% (28次)</small>
+                            <small style="color:#ffcccb; font-weight:bold;">3Y淨報酬: -0.9%</small><br>
+                            <small style="opacity:0.8;">勝率: 35.7% (28次)</small>
                         </div>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
-                            <b>22MA 偏離:</b> 0.87% | <b>現價:</b> $301.74 | 
+                            <b>22MA 偏離:</b> 0.04% | <b>現價:</b> $299.84 | 
                             <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
                         </p>
                         <div id="tv_APD" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
@@ -499,15 +678,14 @@
                             
                         </div>
                         <div class="text-end">
-                            <small style="color:#90ee90; font-weight:bold;">3Y最佳報酬: +2.8%</small><br>
+                            <small style="color:#ffcccb; font-weight:bold;">3Y淨報酬: -2.2%</small><br>
                             <small style="opacity:0.8;">勝率: 29.0% (31次)</small>
                         </div>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
-                            <b>23MA 偏離:</b> 0.17% | <b>現價:</b> $127.18 | 
+                            <b>23MA 偏離:</b> -0.08% | <b>現價:</b> $126.49 | 
                             <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
                         </p>
                         <div id="tv_CPK" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
@@ -528,15 +706,14 @@
                             
                         </div>
                         <div class="text-end">
-                            <small style="color:#90ee90; font-weight:bold;">3Y最佳報酬: +1.3%</small><br>
-                            <small style="opacity:0.8;">勝率: 30.0% (30次)</small>
+                            <small style="color:#ffcccb; font-weight:bold;">3Y淨報酬: -3.6%</small><br>
+                            <small style="opacity:0.8;">勝率: 23.3% (30次)</small>
                         </div>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
-                            <b>32MA 偏離:</b> -0.80% | <b>現價:</b> $79.62 | 
+                            <b>32MA 偏離:</b> -0.49% | <b>現價:</b> $79.96 | 
                             <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
                         </p>
                         <div id="tv_XEL" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
@@ -557,15 +734,14 @@
                             
                         </div>
                         <div class="text-end">
-                            <small style="color:#90ee90; font-weight:bold;">3Y最佳報酬: +0.5%</small><br>
-                            <small style="opacity:0.8;">勝率: 30.6% (36次)</small>
+                            <small style="color:#ffcccb; font-weight:bold;">3Y淨報酬: -5.3%</small><br>
+                            <small style="opacity:0.8;">勝率: 27.8% (36次)</small>
                         </div>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
-                            <b>15MA 偏離:</b> 0.31% | <b>現價:</b> $33.53 | 
+                            <b>15MA 偏離:</b> -0.59% | <b>現價:</b> $33.12 | 
                             <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
                         </p>
                         <div id="tv_CPRT" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
@@ -586,15 +762,14 @@
                             
                         </div>
                         <div class="text-end">
-                            <small style="color:#ffcccb; font-weight:bold;">3Y最佳報酬: -2.2%</small><br>
-                            <small style="opacity:0.8;">勝率: 33.3% (36次)</small>
+                            <small style="color:#ffcccb; font-weight:bold;">3Y淨報酬: -8.1%</small><br>
+                            <small style="opacity:0.8;">勝率: 30.6% (36次)</small>
                         </div>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
-                            <b>15MA 偏離:</b> -0.11% | <b>現價:</b> $72.20 | 
+                            <b>15MA 偏離:</b> -0.25% | <b>現價:</b> $72.26 | 
                             <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
                         </p>
                         <div id="tv_LNT" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
@@ -611,86 +786,55 @@
                 <div class="card mb-4 shadow" style="">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <div>
-                            MSCI <span class="badge bg-light text-dark ms-2">專屬 15MA</span>
+                            EW <span class="badge bg-light text-dark ms-2">專屬 16MA</span>
                             
                         </div>
                         <div class="text-end">
-                            <small style="color:#ffcccb; font-weight:bold;">3Y最佳報酬: -9.2%</small><br>
-                            <small style="opacity:0.8;">勝率: 34.9% (43次)</small>
+                            <small style="color:#ffcccb; font-weight:bold;">3Y淨報酬: -15.0%</small><br>
+                            <small style="opacity:0.8;">勝率: 26.2% (42次)</small>
                         </div>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
-                            <b>15MA 偏離:</b> -0.93% | <b>現價:</b> $584.59 | 
+                            <b>16MA 偏離:</b> -0.63% | <b>現價:</b> $81.37 | 
                             <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
                         </p>
-                        <div id="tv_MSCI" style="height:400px;"></div>
+                        <div id="tv_EW" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
                         <script>
                             new TradingView.widget({
-                                "autosize": true, "symbol": "MSCI", "interval": "D", "theme": "light",
-                                "style": "1", "locale": "zh_TW", "container_id": "tv_MSCI",
-                                "hide_top_toolbar": true, "hide_side_toolbar": true,
-                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 15 } }]
-                            });
-                        </script>
-                    </div>
-                </div>
-                <div class="card mb-4 shadow" style="">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <div>
-                            BJ <span class="badge bg-light text-dark ms-2">專屬 15MA</span>
-                            
-                        </div>
-                        <div class="text-end">
-                            <small style="color:#ffcccb; font-weight:bold;">3Y最佳報酬: -10.9%</small><br>
-                            <small style="opacity:0.8;">勝率: 21.3% (47次)</small>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p class="mb-3">
-                            <b>15MA 偏離:</b> -0.93% | <b>現價:</b> $92.67 | 
-                            <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
-                        </p>
-                        <div id="tv_BJ" style="height:400px;"></div>
-                        <script src="https://s3.tradingview.com/tv.js"></script>
-                        <script>
-                            new TradingView.widget({
-                                "autosize": true, "symbol": "BJ", "interval": "D", "theme": "light",
-                                "style": "1", "locale": "zh_TW", "container_id": "tv_BJ",
-                                "hide_top_toolbar": true, "hide_side_toolbar": true,
-                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 15 } }]
-                            });
-                        </script>
-                    </div>
-                </div>
-                <div class="card mb-4 shadow" style="">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <div>
-                            BAH <span class="badge bg-light text-dark ms-2">專屬 16MA</span>
-                            
-                        </div>
-                        <div class="text-end">
-                            <small style="color:#ffcccb; font-weight:bold;">3Y最佳報酬: -13.9%</small><br>
-                            <small style="opacity:0.8;">勝率: 31.0% (42次)</small>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p class="mb-3">
-                            <b>16MA 偏離:</b> 0.27% | <b>現價:</b> $77.58 | 
-                            <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
-                        </p>
-                        <div id="tv_BAH" style="height:400px;"></div>
-                        <script src="https://s3.tradingview.com/tv.js"></script>
-                        <script>
-                            new TradingView.widget({
-                                "autosize": true, "symbol": "BAH", "interval": "D", "theme": "light",
-                                "style": "1", "locale": "zh_TW", "container_id": "tv_BAH",
+                                "autosize": true, "symbol": "EW", "interval": "D", "theme": "light",
+                                "style": "1", "locale": "zh_TW", "container_id": "tv_EW",
                                 "hide_top_toolbar": true, "hide_side_toolbar": true,
                                 "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 16 } }]
+                            });
+                        </script>
+                    </div>
+                </div>
+                <div class="card mb-4 shadow" style="">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <div>
+                            AWR <span class="badge bg-light text-dark ms-2">專屬 27MA</span>
+                            
+                        </div>
+                        <div class="text-end">
+                            <small style="color:#ffcccb; font-weight:bold;">3Y淨報酬: -29.3%</small><br>
+                            <small style="opacity:0.8;">勝率: 13.8% (29次)</small>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-3">
+                            <b>27MA 偏離:</b> 0.24% | <b>現價:</b> $77.53 | 
+                            <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
+                        </p>
+                        <div id="tv_AWR" style="height:400px;"></div>
+                        <script src="https://s3.tradingview.com/tv.js"></script>
+                        <script>
+                            new TradingView.widget({
+                                "autosize": true, "symbol": "AWR", "interval": "D", "theme": "light",
+                                "style": "1", "locale": "zh_TW", "container_id": "tv_AWR",
+                                "hide_top_toolbar": true, "hide_side_toolbar": true,
+                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 27 } }]
                             });
                         </script>
                     </div>
@@ -702,15 +846,14 @@
                             
                         </div>
                         <div class="text-end">
-                            <small style="color:#ffcccb; font-weight:bold;">3Y最佳報酬: -34.2%</small><br>
-                            <small style="opacity:0.8;">勝率: 25.0% (44次)</small>
+                            <small style="color:#ffcccb; font-weight:bold;">3Y淨報酬: -41.3%</small><br>
+                            <small style="opacity:0.8;">勝率: 22.7% (44次)</small>
                         </div>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
-                            <b>21MA 偏離:</b> -0.59% | <b>現價:</b> $117.37 | 
+                            <b>21MA 偏離:</b> -0.55% | <b>現價:</b> $117.22 | 
                             <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
                         </p>
                         <div id="tv_AGCO" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
@@ -727,29 +870,28 @@
                 <div class="card mb-4 shadow" style="">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <div>
-                            CNI <span class="badge bg-light text-dark ms-2">專屬 21MA</span>
+                            ARTNA <span class="badge bg-light text-dark ms-2">專屬 19MA</span>
                             
                         </div>
                         <div class="text-end">
-                            <small style="color:#ffcccb; font-weight:bold;">3Y最佳報酬: -35.5%</small><br>
-                            <small style="opacity:0.8;">勝率: 18.4% (38次)</small>
+                            <small style="color:#ffcccb; font-weight:bold;">3Y淨報酬: -54.0%</small><br>
+                            <small style="opacity:0.8;">勝率: 13.3% (45次)</small>
                         </div>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
-                            <b>21MA 偏離:</b> -0.49% | <b>現價:</b> $110.79 | 
+                            <b>19MA 偏離:</b> 0.90% | <b>現價:</b> $32.17 | 
                             <b>財報日:</b> <span class="badge bg-warning text-dark">N/A</span>
-                            
                         </p>
-                        <div id="tv_CNI" style="height:400px;"></div>
+                        <div id="tv_ARTNA" style="height:400px;"></div>
                         <script src="https://s3.tradingview.com/tv.js"></script>
                         <script>
                             new TradingView.widget({
-                                "autosize": true, "symbol": "CNI", "interval": "D", "theme": "light",
-                                "style": "1", "locale": "zh_TW", "container_id": "tv_CNI",
+                                "autosize": true, "symbol": "ARTNA", "interval": "D", "theme": "light",
+                                "style": "1", "locale": "zh_TW", "container_id": "tv_ARTNA",
                                 "hide_top_toolbar": true, "hide_side_toolbar": true,
-                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 21 } }]
+                                "studies": [{ "id": "MASimple@tv-basicstudies", "inputs": { "length": 19 } }]
                             });
                         </script>
                     </div>
-                </div><p class="text-center text-muted mt-4 small">最後更新: 2026-05-13 00:27</p></div></body></html>
+                </div><p class="text-center text-muted mt-4 small">最後更新: 2026-05-14 23:39</p></div></body></html>
